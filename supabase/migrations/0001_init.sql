@@ -594,7 +594,7 @@ revoke execute on function public.admin_exists() from public;
 grant  execute on function public.admin_exists() to anon, authenticated, service_role;
 
 -- Atomically promotes a user to admin ONLY if no admin exists yet.
--- Callable by the service role only (from the bootstrap-admin Edge Function).
+-- Callable by the service role only (kept for compatibility; create_first_admin is used).
 create or replace function public.bootstrap_first_admin(p_user_id uuid)
 returns boolean
 language plpgsql

@@ -32,7 +32,7 @@ export function LoginPage() {
   const [authError, setAuthError] = useState<string | null>(null);
 
   // The "Create admin account" button stays visible until the database confirms
-  // an admin exists. The bootstrap-admin function enforces the one-admin rule
+  // an admin exists. The create_first_admin SQL function enforces the one-admin rule
   // server-side, so showing it while the check is unavailable is safe.
   const adminExists = useQuery({
     queryKey: ['admin-exists'],
