@@ -16,13 +16,12 @@ client can watch. Clients log in and watch only what they were given — mostly 
 ```
 Browser (React SPA)
  ├── Supabase JS (anon key + user JWT) ──► Postgres (RLS on every table)
+ │                                        Account SQL functions (create_first_admin, admin_create_client, …)
  │                                        Storage bucket "covers" (public images)
  ├── supabase.functions.invoke(...) ──► Edge Functions (secrets live here only)
  │      bunny-create-upload  → creates Bunny video + DB row, returns presigned TUS signature
  │      get-playback         → checks access, returns 3h signed iframe URL
- │      admin-clients        → create / update / reset password / ban / delete users
- │      bunny-delete-video   → delete video(s) from Bunny + DB, manual status refresh
-      bootstrap-admin      → public, one-time: creates the first admin (refuses once one exists)
+ │ │      bunny-delete-video   → delete video(s) from Bunny + DB, manual status refresh
  └── tus-js-client ──► https://video.bunnycdn.com/tusupload   (video bytes never touch Supabase)
 
 Bunny Stream ── webhook ──► bunny-webhook?secret=…  → re-fetches video from Bunny API → updates status
@@ -37,7 +36,7 @@ Supabase Realtime (videos table) ──► admin UI status badges update live
 | Clients read only published content they have an active grant for | RLS + `has_formation_access()` |
 | Locked formations show title/cover/outline, never `bunny_video_id` | `public_catalog` view, `formation_outline()` function, `videos` RLS |
 | Clients cannot change `role`, `is_active`, `email`, `notes` | `protect_profile_columns` trigger |
-| No public sign-up — admin creates accounts | `admin-clients` function + disable sign-ups in Auth settings |
+| No public sign-up — admin creates accounts | `admin_*` SQL functions (check `is_admin()`) + disable sign-ups in Auth settings |
 | Deactivated users are blocked | Auth ban (`ban_duration`) **and** `is_active_user()` in RLS |
 | Playback URLs expire after 3 h and are only issued after an access check | `get-playback` |
 | Moving e-mail watermark on the player (kept visible in our own fullscreen mode) | `VideoPlayer.tsx` |
@@ -83,8 +82,9 @@ npm run build             # type-check + production build
 ## Supabase setup
 
 1. **SQL** — open *SQL Editor*, paste `supabase/migrations/0001_init.sql`, run. (Safe to re-run.)
-2. **Admin account** — deploy the `bootstrap-admin` function, then open the login page and click
-   **Create admin account**. The button only shows while no admin
+2. **Admin account** — open the login page and click **Create admin account**. Accounts are created by SQL
+   functions directly in Supabase Auth (`auth.users`, e-mail confirmed), so no Edge Function is needed for
+   logins, admin or client accounts. The button only shows while no admin
    exists and disappears for good once yours is created (the function refuses any further attempt).
    *Alternative:* create the user in *Authentication → Users* and run `supabase/seed_admin.sql`.
 3. **Disable public sign-up** — *Authentication → Sign In / Providers → Email*: turn off *Allow new users to sign up*.
@@ -102,7 +102,9 @@ npm run build             # type-check + production build
 4. **Webhook** — library → *API* → *Webhook URL*:
    `https://<project-ref>.supabase.co/functions/v1/bunny-webhook?secret=<BUNNY_WEBHOOK_SECRET>`
 
-## Deploy Edge Functions
+## Deploy Edge Functions (needed for videos only)
+
+Accounts and login work without them. Uploading and playing videos needs these four functions.
 
 ```bash
 npm i -g supabase            # or: npx supabase …
@@ -118,10 +120,8 @@ supabase secrets set \
 
 supabase functions deploy bunny-create-upload
 supabase functions deploy get-playback
-supabase functions deploy admin-clients
 supabase functions deploy bunny-delete-video
 supabase functions deploy bunny-webhook --no-verify-jwt
-supabase functions deploy bootstrap-admin --no-verify-jwt
 ```
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically.
@@ -139,7 +139,7 @@ not deployed). Check *Edge Functions → Logs*. Every function answers `OPTIONS`
 almost always hides a 500/404.
 
 **401 from functions** — the user session expired (log out / in), or a function was deployed with
-`--no-verify-jwt` by mistake / without it for `bunny-webhook`. Only `bunny-webhook` and `bootstrap-admin` must skip JWT verification.
+`--no-verify-jwt` by mistake / without it for `bunny-webhook`. Only `bunny-webhook` must skip JWT verification.
 `403 Account suspended` means the profile has `is_active = false`; `403 Admin only` means the profile role isn't `admin`
 (run `seed_admin.sql`).
 

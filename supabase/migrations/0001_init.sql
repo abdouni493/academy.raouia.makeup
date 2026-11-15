@@ -615,6 +615,261 @@ $$;
 revoke execute on function public.bootstrap_first_admin(uuid) from public, anon, authenticated;
 grant  execute on function public.bootstrap_first_admin(uuid) to service_role;
 
+
+-- -----------------------------------------------------------------------------
+-- 13. ACCOUNT MANAGEMENT IN THE DATABASE (no Edge Function needed)
+--     These SECURITY DEFINER functions create real Supabase Auth users
+--     (auth.users + auth.identities, e-mail confirmed, bcrypt password), so
+--     people log in with the normal e-mail/password sign-in.
+--     * create_first_admin  → anyone, but only while NO admin exists
+--     * admin_*             → admins only (checked with is_admin())
+-- -----------------------------------------------------------------------------
+
+-- Internal: create or update an auth user with a confirmed e-mail + password.
+create or replace function public._upsert_auth_user(
+  p_email text, p_password text, p_full_name text, p_phone text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public, extensions, auth
+as $$
+declare
+  v_email text := lower(trim(p_email));
+  v_id    uuid;
+begin
+  if v_email !~ '^[^\s@]+@[^\s@]+\.[^\s@]+$' then
+    raise exception 'Invalid e-mail' using errcode = '22023';
+  end if;
+  if coalesce(length(p_password), 0) < 8 then
+    raise exception 'Password must be at least 8 characters' using errcode = '22023';
+  end if;
+
+  select id into v_id from auth.users where lower(email) = v_email limit 1;
+
+  if v_id is null then
+    v_id := gen_random_uuid();
+    insert into auth.users (
+      instance_id, id, aud, role, email, encrypted_password,
+      email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+      created_at, updated_at,
+      confirmation_token, recovery_token, email_change_token_new, email_change
+    ) values (
+      '00000000-0000-0000-0000-000000000000', v_id, 'authenticated', 'authenticated',
+      v_email, crypt(p_password, gen_salt('bf')),
+      now(), '{"provider":"email","providers":["email"]}'::jsonb,
+      jsonb_build_object('full_name', coalesce(p_full_name, ''), 'phone', coalesce(p_phone, '')),
+      now(), now(), '', '', '', ''
+    );
+    insert into auth.identities (
+      id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    ) values (
+      gen_random_uuid(), v_id, v_id::text,
+      jsonb_build_object('sub', v_id::text, 'email', v_email, 'email_verified', true, 'phone_verified', false),
+      'email', now(), now(), now()
+    );
+  else
+    update auth.users
+       set encrypted_password = crypt(p_password, gen_salt('bf')),
+           email_confirmed_at = coalesce(email_confirmed_at, now()),
+           banned_until = null,
+           updated_at = now()
+     where id = v_id;
+    if not exists (select 1 from auth.identities where user_id = v_id and provider = 'email') then
+      insert into auth.identities (
+        id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+      ) values (
+        gen_random_uuid(), v_id, v_id::text,
+        jsonb_build_object('sub', v_id::text, 'email', v_email, 'email_verified', true, 'phone_verified', false),
+        'email', now(), now(), now()
+      );
+    end if;
+  end if;
+
+  -- The on_auth_user_created trigger normally creates the profile; make sure.
+  insert into public.profiles (id, email, full_name, phone)
+  values (v_id, v_email, nullif(p_full_name, ''), nullif(p_phone, ''))
+  on conflict (id) do update
+    set email = excluded.email,
+        full_name = coalesce(excluded.full_name, public.profiles.full_name),
+        phone = coalesce(excluded.phone, public.profiles.phone);
+
+  return v_id;
+end;
+$$;
+
+revoke execute on function public._upsert_auth_user(text, text, text, text) from public, anon, authenticated;
+
+-- Login page button: creates the first admin. Refuses once an admin exists.
+create or replace function public.create_first_admin(p_email text, p_password text, p_full_name text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public, extensions, auth
+as $$
+declare
+  v_id uuid;
+begin
+  perform pg_advisory_xact_lock(hashtext('bootstrap_first_admin'));
+  if exists (select 1 from public.profiles where role = 'admin') then
+    raise exception 'An admin account already exists' using errcode = '42501';
+  end if;
+  v_id := public._upsert_auth_user(p_email, p_password, p_full_name);
+  update public.profiles set role = 'admin', is_active = true where id = v_id;
+  return v_id;
+end;
+$$;
+
+revoke execute on function public.create_first_admin(text, text, text) from public;
+grant  execute on function public.create_first_admin(text, text, text) to anon, authenticated;
+
+-- Admin: create a client account.
+create or replace function public.admin_create_client(
+  p_email text, p_password text, p_full_name text, p_phone text default null, p_notes text default null
+)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public, extensions, auth
+as $$
+declare
+  v_id uuid;
+  v_profile public.profiles;
+begin
+  if not public.is_admin() then
+    raise exception 'Admin only' using errcode = '42501';
+  end if;
+  if exists (select 1 from auth.users where lower(email) = lower(trim(p_email))) then
+    raise exception 'A user with this e-mail already exists' using errcode = '23505';
+  end if;
+  v_id := public._upsert_auth_user(p_email, p_password, p_full_name, p_phone);
+  update public.profiles
+     set role = 'client', is_active = true, notes = nullif(p_notes, ''), phone = nullif(p_phone, '')
+   where id = v_id
+  returning * into v_profile;
+  return v_profile;
+end;
+$$;
+
+-- Admin: edit a client's details (and e-mail used to log in).
+create or replace function public.admin_update_client(
+  p_user_id uuid, p_email text, p_full_name text, p_phone text, p_notes text
+)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public, extensions, auth
+as $$
+declare
+  v_email text := lower(trim(p_email));
+  v_profile public.profiles;
+begin
+  if not public.is_admin() then
+    raise exception 'Admin only' using errcode = '42501';
+  end if;
+  if v_email is not null and v_email <> '' then
+    if v_email !~ '^[^\s@]+@[^\s@]+\.[^\s@]+$' then
+      raise exception 'Invalid e-mail' using errcode = '22023';
+    end if;
+    if exists (select 1 from auth.users where lower(email) = v_email and id <> p_user_id) then
+      raise exception 'A user with this e-mail already exists' using errcode = '23505';
+    end if;
+    update auth.users set email = v_email, email_confirmed_at = coalesce(email_confirmed_at, now()), updated_at = now()
+     where id = p_user_id and lower(email) <> v_email;
+    update auth.identities
+       set identity_data = identity_data || jsonb_build_object('email', v_email), updated_at = now()
+     where user_id = p_user_id and provider = 'email';
+  end if;
+  update public.profiles
+     set full_name = nullif(p_full_name, ''),
+         phone = nullif(p_phone, ''),
+         notes = nullif(p_notes, ''),
+         email = coalesce(nullif(v_email, ''), email)
+   where id = p_user_id
+  returning * into v_profile;
+  return v_profile;
+end;
+$$;
+
+-- Admin: set a new password for a user.
+create or replace function public.admin_reset_password(p_user_id uuid, p_password text)
+returns void
+language plpgsql
+security definer
+set search_path = public, extensions, auth
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Admin only' using errcode = '42501';
+  end if;
+  if coalesce(length(p_password), 0) < 8 then
+    raise exception 'Password must be at least 8 characters' using errcode = '22023';
+  end if;
+  update auth.users
+     set encrypted_password = crypt(p_password, gen_salt('bf')), updated_at = now()
+   where id = p_user_id;
+end;
+$$;
+
+-- Admin: activate / deactivate (ban in Auth + flag + sign out everywhere).
+create or replace function public.admin_set_client_active(p_user_id uuid, p_active boolean)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public, extensions, auth
+as $$
+declare
+  v_profile public.profiles;
+begin
+  if not public.is_admin() then
+    raise exception 'Admin only' using errcode = '42501';
+  end if;
+  if p_user_id = auth.uid() then
+    raise exception 'You cannot deactivate yourself' using errcode = '22023';
+  end if;
+  update auth.users
+     set banned_until = case when p_active then null else now() + interval '100 years' end,
+         updated_at = now()
+   where id = p_user_id;
+  if not p_active then
+    delete from auth.refresh_tokens where user_id::text = p_user_id::text;
+    delete from auth.sessions where user_id = p_user_id;
+  end if;
+  update public.profiles set is_active = p_active where id = p_user_id returning * into v_profile;
+  return v_profile;
+end;
+$$;
+
+-- Admin: delete a user completely (auth + profile + grants + progress).
+create or replace function public.admin_delete_client(p_user_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public, extensions, auth
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Admin only' using errcode = '42501';
+  end if;
+  if p_user_id = auth.uid() then
+    raise exception 'You cannot delete yourself' using errcode = '22023';
+  end if;
+  delete from auth.users where id = p_user_id;
+  delete from public.profiles where id = p_user_id;
+end;
+$$;
+
+revoke execute on function public.admin_create_client(text, text, text, text, text) from public, anon;
+revoke execute on function public.admin_update_client(uuid, text, text, text, text) from public, anon;
+revoke execute on function public.admin_reset_password(uuid, text) from public, anon;
+revoke execute on function public.admin_set_client_active(uuid, boolean) from public, anon;
+revoke execute on function public.admin_delete_client(uuid) from public, anon;
+grant execute on function public.admin_create_client(text, text, text, text, text) to authenticated;
+grant execute on function public.admin_update_client(uuid, text, text, text, text) to authenticated;
+grant execute on function public.admin_reset_password(uuid, text) to authenticated;
+grant execute on function public.admin_set_client_active(uuid, boolean) to authenticated;
+grant execute on function public.admin_delete_client(uuid) to authenticated;
+
 -- =============================================================================
 --  Done. Next: open the app's login page and click "Create admin account"
 --  (alternative: create the user in Authentication → Users and run seed_admin.sql).

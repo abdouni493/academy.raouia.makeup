@@ -197,6 +197,18 @@ export type Database = {
       has_formation_access: { Args: { p_formation_id: string }; Returns: boolean };
       formation_outline: { Args: { p_formation_id: string }; Returns: OutlineItem[] };
       admin_exists: { Args: Record<string, never>; Returns: boolean };
+      create_first_admin: { Args: { p_email: string; p_password: string; p_full_name: string }; Returns: string };
+      admin_create_client: {
+        Args: { p_email: string; p_password: string; p_full_name: string; p_phone?: string | null; p_notes?: string | null };
+        Returns: Profile;
+      };
+      admin_update_client: {
+        Args: { p_user_id: string; p_email: string; p_full_name: string; p_phone: string; p_notes: string };
+        Returns: Profile;
+      };
+      admin_reset_password: { Args: { p_user_id: string; p_password: string }; Returns: undefined };
+      admin_set_client_active: { Args: { p_user_id: string; p_active: boolean }; Returns: Profile };
+      admin_delete_client: { Args: { p_user_id: string }; Returns: undefined };
     };
     Enums: { user_role: UserRole; video_status: VideoStatus };
     CompositeTypes: Record<string, never>;

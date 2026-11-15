@@ -111,7 +111,7 @@ export function ClientFormModal({
         await api.clients.update({
           user_id: client.id,
           full_name: v.full_name.trim(),
-          email: v.email.trim().toLowerCase() !== client.email ? v.email.trim() : undefined,
+          email: v.email.trim().toLowerCase(),
           phone: v.phone?.trim() || null,
           notes: v.notes?.trim() || null,
         });
