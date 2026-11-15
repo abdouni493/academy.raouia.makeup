@@ -1,5 +1,6 @@
 import { HttpError, handleError, json, preflight, readJson } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/supabase.ts';
+import { findAuthUserIdByEmail } from '../_shared/users.ts';
 
 interface Body {
   action?: 'create' | 'update' | 'reset_password' | 'set_active' | 'delete';
@@ -30,13 +31,21 @@ Deno.serve(async (req) => {
         const email = (body.email ?? '').trim().toLowerCase();
         if (!email) throw new HttpError(400, 'email is required');
         const password = assertPassword(body.password);
+        // Created directly in Supabase Auth (auth.users) with the e-mail confirmed,
+        // so the client can log in right away with this e-mail + password.
         const { data, error } = await adminClient.auth.admin.createUser({
           email,
           password,
           email_confirm: true,
           user_metadata: { full_name: body.full_name ?? '', phone: body.phone ?? '' },
         });
-        if (error || !data.user) throw new HttpError(400, error?.message ?? 'Could not create user');
+        if (error || !data.user) {
+          if (error && /already|registered|exists/i.test(error.message)) {
+            const existing = await findAuthUserIdByEmail(email);
+            throw new HttpError(409, existing ? 'A user with this e-mail already exists' : error.message);
+          }
+          throw new HttpError(400, error?.message ?? 'Could not create user');
+        }
         const { data: profile, error: pErr } = await adminClient
           .from('profiles')
           .upsert({
@@ -50,7 +59,11 @@ Deno.serve(async (req) => {
           })
           .select('*')
           .single();
-        if (pErr) throw new HttpError(500, pErr.message);
+        if (pErr) {
+          // Don't leave a login without a profile: roll back the auth user.
+          await adminClient.auth.admin.deleteUser(data.user.id).catch(() => {});
+          throw new HttpError(500, pErr.message);
+        }
         return json({ profile });
       }
 

@@ -35,7 +35,7 @@ export function AdminSetupForm({ onBack, onCreated }: { onBack: () => void; onCr
     toast.success(t('auth.setupDone'));
     onCreated();
     // Sign straight in; the login page then redirects to /admin.
-    const { error } = await supabase.auth.signInWithPassword({ email: v.email.trim(), password: v.password });
+    const { error } = await supabase.auth.signInWithPassword({ email: v.email.trim().toLowerCase(), password: v.password });
     if (error) {
       toast.error(error.message);
       onBack();

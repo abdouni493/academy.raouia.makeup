@@ -4,12 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Lock, Mail, MessageCircle, ShieldCheck } from 'lucide-react';
+import { Lock, Mail, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { Button, Field, Input } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
-import { whatsappLink } from '@/lib/utils';
 import { AdminSetupForm } from './AdminSetupForm';
 import { AuthShell } from './AuthShell';
 import { useAuth } from './AuthProvider';
@@ -17,13 +15,25 @@ import { useAuth } from './AuthProvider';
 const schema = z.object({ email: z.string().email(), password: z.string().min(1) });
 type Values = z.infer<typeof schema>;
 
+/** Turns a Supabase auth error into a message the user can act on. */
+function loginErrorMessage(message: string, t: (k: string) => string): string {
+  if (/invalid login credentials|invalid_grant|invalid credentials/i.test(message)) return t('auth.invalidCredentials');
+  if (/banned/i.test(message)) return t('auth.suspendedText');
+  if (/email not confirmed/i.test(message)) return t('auth.emailNotConfirmed');
+  if (/failed to fetch|network|load failed/i.test(message)) return t('auth.networkError');
+  return message;
+}
+
 export function LoginPage() {
   const { t } = useTranslation();
   const { session, profile, loading } = useAuth();
   const location = useLocation();
-  const [mode, setMode] = useState<'login' | 'forgot' | 'setup'>('login');
+  const [mode, setMode] = useState<'login' | 'setup'>('login');
+  const [authError, setAuthError] = useState<string | null>(null);
 
-  // Show "Create admin account" only while no admin exists yet.
+  // The "Create admin account" button stays visible until the database confirms
+  // an admin exists. The bootstrap-admin function enforces the one-admin rule
+  // server-side, so showing it while the check is unavailable is safe.
   const adminExists = useQuery({
     queryKey: ['admin-exists'],
     queryFn: async () => {
@@ -32,11 +42,9 @@ export function LoginPage() {
       return data === true;
     },
     staleTime: 0,
+    retry: false,
   });
-  const showSetup = adminExists.data === false;
-  const [resetEmail, setResetEmail] = useState('');
-  const [sending, setSending] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
+  const showSetup = !adminExists.isLoading && adminExists.data !== true;
 
   const { register, handleSubmit, formState } = useForm<Values>({ resolver: zodResolver(schema) });
 
@@ -47,33 +55,20 @@ export function LoginPage() {
 
   const onSubmit = async (v: Values) => {
     setAuthError(null);
-    const { error } = await supabase.auth.signInWithPassword({ email: v.email.trim(), password: v.password });
-    if (error) {
-      const banned = /banned/i.test(error.message);
-      setAuthError(banned ? t('auth.suspendedText') : t('auth.invalidCredentials'));
-    }
-  };
-
-  const sendReset = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!z.string().email().safeParse(resetEmail.trim()).success) {
-      toast.error(t('common.invalidEmail'));
-      return;
-    }
-    setSending(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    setSending(false);
-    if (error && !/rate/i.test(error.message)) toast.error(error.message);
-    else toast.success(t('auth.resetSent'));
+    const { error } = await supabase.auth.signInWithPassword({ email: v.email.trim().toLowerCase(), password: v.password });
+    if (error) setAuthError(loginErrorMessage(error.message, t));
   };
 
   return (
     <AuthShell>
       {mode === 'setup' && showSetup ? (
-        <AdminSetupForm onBack={() => setMode('login')} onCreated={() => void adminExists.refetch()} />
-      ) : mode === 'login' || mode === 'setup' ? (
+        <AdminSetupForm
+          onBack={() => setMode('login')}
+          onCreated={() => {
+            void adminExists.refetch();
+          }}
+        />
+      ) : (
         <div className="animate-fade-in">
           <h1 className="text-3xl font-semibold sm:text-4xl">{t('auth.welcomeBack')}</h1>
           <p className="mt-2 text-muted">{t('auth.subtitle')}</p>
@@ -87,55 +82,39 @@ export function LoginPage() {
             <Field label={t('auth.password')} error={formState.errors.password && t('common.required')}>
               <div className="relative">
                 <Lock className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-                <Input type="password" autoComplete="current-password" className="ps-11" invalid={!!formState.errors.password} {...register('password')} />
+                <Input
+                  type="password"
+                  autoComplete="current-password"
+                  className="ps-11"
+                  invalid={!!formState.errors.password}
+                  {...register('password')}
+                />
               </div>
             </Field>
             {authError && <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{authError}</div>}
-            <div className="flex justify-end">
-              <button type="button" onClick={() => setMode('forgot')} className="text-sm font-medium text-rosegold hover:text-blush-600">
-                {t('auth.forgot')}
-              </button>
-            </div>
             <Button type="submit" size="lg" className="w-full" loading={formState.isSubmitting}>
               {t('auth.signIn')}
             </Button>
           </form>
-          <a
-            href={whatsappLink('')}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-8 flex items-center justify-center gap-2 rounded-xl bg-blush-50 px-4 py-3 text-center text-sm text-muted transition hover:text-plum"
-          >
-            <MessageCircle className="h-4 w-4 text-rosegold" />
-            {t('auth.noAccount')}
-          </a>
+
           {showSetup && (
-            <Button
-              variant="secondary"
-              size="lg"
-              className="mt-4 w-full"
-              icon={<ShieldCheck className="h-4 w-4" />}
-              onClick={() => setMode('setup')}
-            >
-              {t('auth.setupButton')}
-            </Button>
+            <>
+              <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-widest text-muted">
+                <span className="h-px flex-1 bg-blush-100" />
+                {t('auth.or')}
+                <span className="h-px flex-1 bg-blush-100" />
+              </div>
+              <Button
+                variant="secondary"
+                size="lg"
+                className="w-full"
+                icon={<ShieldCheck className="h-4 w-4" />}
+                onClick={() => setMode('setup')}
+              >
+                {t('auth.setupButton')}
+              </Button>
+            </>
           )}
-        </div>
-      ) : (
-        <div className="animate-fade-in">
-          <button onClick={() => setMode('login')} className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-plum">
-            <ArrowLeft className="rtl-flip h-4 w-4" /> {t('auth.backToLogin')}
-          </button>
-          <h1 className="text-3xl font-semibold">{t('auth.forgotTitle')}</h1>
-          <p className="mt-2 text-muted">{t('auth.forgotHelp')}</p>
-          <form onSubmit={sendReset} className="mt-8 space-y-5">
-            <Field label={t('auth.email')}>
-              <Input type="email" autoComplete="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} required />
-            </Field>
-            <Button type="submit" size="lg" className="w-full" loading={sending}>
-              {t('auth.sendReset')}
-            </Button>
-          </form>
         </div>
       )}
     </AuthShell>

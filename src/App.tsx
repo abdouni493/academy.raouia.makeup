@@ -4,7 +4,6 @@ import { PageLoader } from '@/components/ui';
 import { ClientLayout } from '@/components/layout/ClientLayout';
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
 import { LoginPage } from '@/features/auth/LoginPage';
-import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage';
 import { DashboardPage } from '@/features/client/DashboardPage';
 import { CatalogPage } from '@/features/client/CatalogPage';
 import { FormationPage } from '@/features/client/FormationPage';
@@ -24,7 +23,6 @@ export default function App() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<ClientLayout />}>

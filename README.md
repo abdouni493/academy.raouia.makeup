@@ -83,13 +83,13 @@ npm run build             # type-check + production build
 ## Supabase setup
 
 1. **SQL** — open *SQL Editor*, paste `supabase/migrations/0001_init.sql`, run. (Safe to re-run.)
-2. **Admin account** — also run `supabase/migrations/0002_bootstrap_admin.sql`, deploy the `bootstrap-admin`
-   function, then open the login page and click **Create admin account**. The button only shows while no admin
+2. **Admin account** — deploy the `bootstrap-admin` function, then open the login page and click
+   **Create admin account**. The button only shows while no admin
    exists and disappears for good once yours is created (the function refuses any further attempt).
    *Alternative:* create the user in *Authentication → Users* and run `supabase/seed_admin.sql`.
 3. **Disable public sign-up** — *Authentication → Sign In / Providers → Email*: turn off *Allow new users to sign up*.
-4. **URLs** — *Authentication → URL Configuration*: set *Site URL* to your Vercel URL and add
-   `https://<your-domain>/reset-password` (and `http://localhost:5173/reset-password`) to *Redirect URLs*.
+4. **URLs** — *Authentication → URL Configuration*: set *Site URL* to your Vercel URL.
+   (There is no self-service password reset: the admin resets passwords from the Clients page.)
 5. **Realtime** — the SQL adds `videos` to the `supabase_realtime` publication. Check *Database → Publications* if badges don't update live.
 
 ## Bunny Stream setup
@@ -156,4 +156,7 @@ domain isn't in Bunny's allowed referrers.
 **Upload fails immediately** — wrong `BUNNY_API_KEY` / `BUNNY_LIBRARY_ID` (the TUS signature is
 `sha256(libraryId + apiKey + expire + videoId)`). Use the *Stream library* API key, not the account API key.
 
-**Reset-password link opens the login page** — add `/reset-password` to Supabase *Redirect URLs*.
+**"Create admin account" button still visible after creating the admin** — `0001_init.sql` wasn't run
+(the page can't confirm an admin exists). It's harmless: the function refuses a second admin.
+
+**Login says it can't reach the server** — check `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in Vercel.
