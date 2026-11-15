@@ -90,7 +90,7 @@ export function AdminLayout() {
       </motion.nav>
       <div className="relative space-y-3 border-t border-white/10 p-4">
         <LanguageSwitcher dark />
-        <NavLink to="/" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5 hover:text-white">
+        <NavLink to="/catalog" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5 hover:text-white">
           <GraduationCap className="h-4 w-4" /> {t('nav.clientArea')}
         </NavLink>
         <div className="flex items-center justify-between gap-2 rounded-xl bg-white/5 px-4 py-3">

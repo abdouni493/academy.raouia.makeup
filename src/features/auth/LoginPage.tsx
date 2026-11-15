@@ -25,6 +25,15 @@ function loginErrorMessage(message: string, t: (k: string) => string): string {
   return message;
 }
 
+/**
+ * Where to go after logging in. Admins always land in the admin panel (or the
+ * admin page they were trying to open); clients go back to where they were.
+ */
+function homeFor(isAdmin: boolean, from?: string): string {
+  if (isAdmin) return from?.startsWith('/admin') ? from : '/admin';
+  return from && from !== '/login' && !from.startsWith('/admin') ? from : '/';
+}
+
 export function LoginPage() {
   const { t } = useTranslation();
   const { session, profile, loading } = useAuth();
@@ -51,7 +60,7 @@ export function LoginPage() {
 
   if (!loading && session && profile) {
     const from = (location.state as { from?: string } | null)?.from;
-    return <Navigate to={from && from !== '/login' ? from : profile.role === 'admin' ? '/admin' : '/'} replace />;
+    return <Navigate to={homeFor(profile.role === 'admin' && profile.is_active, from)} replace />;
   }
 
   const onSubmit = async (v: Values) => {

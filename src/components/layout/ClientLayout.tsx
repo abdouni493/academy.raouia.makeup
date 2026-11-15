@@ -26,7 +26,9 @@ export function ClientLayout() {
   }, []);
 
   const links = [
-    { to: '/', label: t('nav.dashboard'), icon: Home, end: true },
+    isAdmin
+      ? { to: '/admin', label: t('nav.admin'), icon: LayoutDashboard, end: false }
+      : { to: '/', label: t('nav.dashboard'), icon: Home, end: true },
     { to: '/catalog', label: t('nav.catalog'), icon: Crown, end: false },
   ];
   const initials = (profile?.full_name || profile?.email || '?').trim().slice(0, 1).toUpperCase();

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { PageLoader } from '@/components/ui';
 import { ClientLayout } from '@/components/layout/ClientLayout';
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { DashboardPage } from '@/features/client/DashboardPage';
 import { CatalogPage } from '@/features/client/CatalogPage';
@@ -18,6 +19,12 @@ const PacksPage = lazy(() => import('@/features/admin/PacksPage').then((m) => ({
 const ClientsPage = lazy(() => import('@/features/admin/ClientsPage').then((m) => ({ default: m.ClientsPage })));
 const ClientDetailPage = lazy(() => import('@/features/admin/ClientDetailPage').then((m) => ({ default: m.ClientDetailPage })));
 
+/** "/" is the student dashboard; admins are sent straight to the admin panel. */
+function HomeRoute() {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <Navigate to="/admin" replace /> : <DashboardPage />;
+}
+
 export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
@@ -26,7 +33,7 @@ export default function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route element={<ClientLayout />}>
-            <Route index element={<DashboardPage />} />
+            <Route index element={<HomeRoute />} />
             <Route path="catalog" element={<CatalogPage />} />
             <Route path="formation/:slug" element={<FormationPage />} />
             <Route path="profile" element={<ProfilePage />} />
