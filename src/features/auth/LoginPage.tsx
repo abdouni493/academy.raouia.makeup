@@ -3,12 +3,14 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowLeft, Lock, Mail, MessageCircle } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { ArrowLeft, Lock, Mail, MessageCircle, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button, Field, Input } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 import { whatsappLink } from '@/lib/utils';
+import { AdminSetupForm } from './AdminSetupForm';
 import { AuthShell } from './AuthShell';
 import { useAuth } from './AuthProvider';
 
@@ -19,7 +21,19 @@ export function LoginPage() {
   const { t } = useTranslation();
   const { session, profile, loading } = useAuth();
   const location = useLocation();
-  const [mode, setMode] = useState<'login' | 'forgot'>('login');
+  const [mode, setMode] = useState<'login' | 'forgot' | 'setup'>('login');
+
+  // Show "Create admin account" only while no admin exists yet.
+  const adminExists = useQuery({
+    queryKey: ['admin-exists'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('admin_exists');
+      if (error) throw error;
+      return data === true;
+    },
+    staleTime: 0,
+  });
+  const showSetup = adminExists.data === false;
   const [resetEmail, setResetEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -57,7 +71,9 @@ export function LoginPage() {
 
   return (
     <AuthShell>
-      {mode === 'login' ? (
+      {mode === 'setup' && showSetup ? (
+        <AdminSetupForm onBack={() => setMode('login')} onCreated={() => void adminExists.refetch()} />
+      ) : mode === 'login' || mode === 'setup' ? (
         <div className="animate-fade-in">
           <h1 className="text-3xl font-semibold sm:text-4xl">{t('auth.welcomeBack')}</h1>
           <p className="mt-2 text-muted">{t('auth.subtitle')}</p>
@@ -93,6 +109,17 @@ export function LoginPage() {
             <MessageCircle className="h-4 w-4 text-rosegold" />
             {t('auth.noAccount')}
           </a>
+          {showSetup && (
+            <Button
+              variant="secondary"
+              size="lg"
+              className="mt-4 w-full"
+              icon={<ShieldCheck className="h-4 w-4" />}
+              onClick={() => setMode('setup')}
+            >
+              {t('auth.setupButton')}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="animate-fade-in">

@@ -196,6 +196,7 @@ export type Database = {
       is_active_user: { Args: Record<string, never>; Returns: boolean };
       has_formation_access: { Args: { p_formation_id: string }; Returns: boolean };
       formation_outline: { Args: { p_formation_id: string }; Returns: OutlineItem[] };
+      admin_exists: { Args: Record<string, never>; Returns: boolean };
     };
     Enums: { user_role: UserRole; video_status: VideoStatus };
     CompositeTypes: Record<string, never>;

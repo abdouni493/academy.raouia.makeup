@@ -29,6 +29,8 @@ export interface TusInfo {
 }
 
 export const api = {
+  bootstrapAdmin: (p: { email: string; password: string; full_name: string }) =>
+    callFunction<{ ok: true }>('bootstrap-admin', p),
   createUpload: (p: { formation_id: string; section_id?: string | null; title: string }) =>
     callFunction<{ video_row: Video; tus: TusInfo }>('bunny-create-upload', p),
   getPlayback: (video_id: string) =>

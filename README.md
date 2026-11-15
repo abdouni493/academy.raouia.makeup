@@ -22,6 +22,7 @@ Browser (React SPA)
  │      get-playback         → checks access, returns 3h signed iframe URL
  │      admin-clients        → create / update / reset password / ban / delete users
  │      bunny-delete-video   → delete video(s) from Bunny + DB, manual status refresh
+      bootstrap-admin      → public, one-time: creates the first admin (refuses once one exists)
  └── tus-js-client ──► https://video.bunnycdn.com/tusupload   (video bytes never touch Supabase)
 
 Bunny Stream ── webhook ──► bunny-webhook?secret=…  → re-fetches video from Bunny API → updates status
@@ -82,8 +83,10 @@ npm run build             # type-check + production build
 ## Supabase setup
 
 1. **SQL** — open *SQL Editor*, paste `supabase/migrations/0001_init.sql`, run. (Safe to re-run.)
-2. **Admin account** — *Authentication → Users → Add user → Create new user* (tick *Auto confirm*), then
-   run `supabase/seed_admin.sql` with your e-mail.
+2. **Admin account** — also run `supabase/migrations/0002_bootstrap_admin.sql`, deploy the `bootstrap-admin`
+   function, then open the login page and click **Create admin account**. The button only shows while no admin
+   exists and disappears for good once yours is created (the function refuses any further attempt).
+   *Alternative:* create the user in *Authentication → Users* and run `supabase/seed_admin.sql`.
 3. **Disable public sign-up** — *Authentication → Sign In / Providers → Email*: turn off *Allow new users to sign up*.
 4. **URLs** — *Authentication → URL Configuration*: set *Site URL* to your Vercel URL and add
    `https://<your-domain>/reset-password` (and `http://localhost:5173/reset-password`) to *Redirect URLs*.
@@ -118,6 +121,7 @@ supabase functions deploy get-playback
 supabase functions deploy admin-clients
 supabase functions deploy bunny-delete-video
 supabase functions deploy bunny-webhook --no-verify-jwt
+supabase functions deploy bootstrap-admin --no-verify-jwt
 ```
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically.
@@ -135,7 +139,7 @@ not deployed). Check *Edge Functions → Logs*. Every function answers `OPTIONS`
 almost always hides a 500/404.
 
 **401 from functions** — the user session expired (log out / in), or a function was deployed with
-`--no-verify-jwt` by mistake / without it for `bunny-webhook`. Only `bunny-webhook` must skip JWT verification.
+`--no-verify-jwt` by mistake / without it for `bunny-webhook`. Only `bunny-webhook` and `bootstrap-admin` must skip JWT verification.
 `403 Account suspended` means the profile has `is_active = false`; `403 Admin only` means the profile role isn't `admin`
 (run `seed_admin.sql`).
 
