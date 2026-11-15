@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, Clock, Crown, Sparkles, UserCheck, Users, Video, Gem } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { StaggerGroup, StaggerItem } from '@/components/Motion';
 import { Badge, Card, CardHeader, Skeleton } from '@/components/ui';
 import { StatusBadge } from '@/components/Badges';
 import { PageHeader } from '@/components/PageHeader';
@@ -59,9 +60,10 @@ export function AdminDashboardPage() {
     <div className="space-y-8">
       <PageHeader eyebrow={<><Sparkles className="me-1 inline h-3.5 w-3.5" /> Admin</>} title={t('admin.dashboardTitle')} subtitle={t('admin.dashboardSubtitle')} />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      <StaggerGroup className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         {cards.map((c, i) => (
-          <div key={c.label} className="card group relative overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-glow">
+          <StaggerItem key={c.label}>
+          <div className="card group relative h-full overflow-hidden p-5 transition-shadow hover:shadow-glow">
             <div className="absolute -end-6 -top-6 h-20 w-20 rounded-full bg-blush-100 transition group-hover:scale-125" />
             <span className={`relative mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${i % 2 ? 'bg-champagne text-rosegold' : 'bg-brand-gradient text-white'}`}>
               <c.icon className="h-5 w-5" />
@@ -69,8 +71,9 @@ export function AdminDashboardPage() {
             {stats.isLoading ? <Skeleton className="h-8 w-16" /> : <div className="relative font-display text-3xl font-semibold text-plum">{c.value ?? 0}</div>}
             <div className="relative mt-1 text-xs text-muted">{c.label}</div>
           </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerGroup>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

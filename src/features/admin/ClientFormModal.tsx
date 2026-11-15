@@ -24,15 +24,21 @@ export function CredentialsModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
-  if (!data) return null;
-  const text = credentialsText(t, data.name, data.email, data.password);
+  // Keep the last credentials while the modal animates out.
+  const [last, setLast] = useState(data);
+  useEffect(() => {
+    if (data) setLast(data);
+  }, [data]);
+  const shown = data ?? last;
+  if (!shown) return null;
+  const text = credentialsText(t, shown.name, shown.email, shown.password);
   const copy = async () => {
     await navigator.clipboard.writeText(text);
     toast.success(t('common.copied'));
   };
   return (
     <Modal
-      open
+      open={!!data}
       onClose={onClose}
       title={t('clients.credentialsTitle')}
       footer={
@@ -40,7 +46,7 @@ export function CredentialsModal({
           <Button variant="secondary" icon={<Copy className="h-4 w-4" />} onClick={() => void copy()}>
             {t('common.copy')}
           </Button>
-          <a href={whatsappLink(text, data.phone || '')} target="_blank" rel="noreferrer">
+          <a href={whatsappLink(text, shown.phone || '')} target="_blank" rel="noreferrer">
             <Button icon={<MessageCircle className="h-4 w-4" />}>{t('clients.sendWhatsapp')}</Button>
           </a>
         </>

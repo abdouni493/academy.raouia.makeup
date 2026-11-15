@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, PlayCircle, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { StaggerGroup, StaggerItem } from '@/components/Motion';
+import { ease } from '@/lib/motion';
 import { Button, CardGridSkeleton, EmptyState, Skeleton } from '@/components/ui';
 import { CoverImage } from '@/components/CoverImage';
 import { ProgressBar } from '@/components/Badges';
@@ -33,30 +36,43 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-12">
-      <section className="relative overflow-hidden rounded-3xl bg-blush-gradient p-6 shadow-soft sm:p-10">
-        <div className="absolute -end-10 -top-16 h-56 w-56 rounded-full bg-blush-200/70 blur-3xl" />
-        <div className="absolute -bottom-20 end-1/3 h-48 w-48 rounded-full bg-champagne blur-3xl" />
-        <div className="relative">
+      <motion.section
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease }}
+        className="relative overflow-hidden rounded-3xl bg-blush-gradient p-6 shadow-soft sm:p-10"
+      >
+        <motion.div
+          className="absolute -end-10 -top-16 h-56 w-56 rounded-full bg-blush-200/70 blur-3xl"
+          animate={{ x: [0, -20, 0], y: [0, 14, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute -bottom-20 end-1/3 h-48 w-48 rounded-full bg-champagne blur-3xl"
+          animate={{ x: [0, 24, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div className="relative" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.5, ease }}>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-rosegold">
             <Sparkles className="h-3.5 w-3.5" /> {t('nav.dashboard')}
           </div>
           <h1 className="text-3xl font-semibold sm:text-4xl">{t('client.hello', { name: firstName })}</h1>
           <p className="mt-2 text-muted">{t('client.welcome')}</p>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {continueWatching.length > 0 && (
         <section>
           <h2 className="mb-5 text-2xl font-semibold">{t('client.continueWatching')}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StaggerGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {continueWatching.map((p) => {
               const v = p.videos!;
               const pct = v.duration_seconds ? (p.last_position_seconds / v.duration_seconds) * 100 : 0;
               return (
+                <StaggerItem key={p.video_id}>
                 <Link
-                  key={p.video_id}
                   to={`/formation/${v.formations!.slug}?v=${v.id}`}
-                  className="card group overflow-hidden transition hover:-translate-y-0.5 hover:shadow-glow"
+                  className="card group block overflow-hidden transition-shadow hover:shadow-glow"
                 >
                   <div className="relative aspect-video overflow-hidden">
                     <CoverImage src={v.thumbnail_url || v.formations!.cover_url} alt={v.title} seed={v.id} />
@@ -73,9 +89,10 @@ export function DashboardPage() {
                     <div className="mt-0.5 truncate font-medium text-plum">{v.title}</div>
                   </div>
                 </Link>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerGroup>
         </section>
       )}
       {progress.isLoading && <Skeleton className="h-40 w-full" />}
@@ -103,15 +120,16 @@ export function DashboardPage() {
             }
           />
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {mine.map((f) => (
-              <FormationCard
-                key={f.id}
-                entry={f}
-                progress={f.video_count ? Math.min(100, Math.round(((completedByFormation[f.id] ?? 0) / f.video_count) * 100)) : 0}
-              />
+              <StaggerItem key={f.id}>
+                <FormationCard
+                  entry={f}
+                  progress={f.video_count ? Math.min(100, Math.round(((completedByFormation[f.id] ?? 0) / f.video_count) * 100)) : 0}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         )}
       </section>
     </div>

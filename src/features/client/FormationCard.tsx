@@ -62,7 +62,7 @@ export function FormationCard({ entry, progress, requestMessage }: { entry: Cata
   return (
     <Link
       to={`/formation/${entry.slug}`}
-      className="card group flex animate-fade-in flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
+      className="card group flex h-full flex-col overflow-hidden transition-shadow duration-300 hover:shadow-glow"
     >
       {body}
     </Link>

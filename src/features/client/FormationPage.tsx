@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -13,7 +13,9 @@ import {
   MessageCircle,
   PlayCircle,
 } from 'lucide-react';
+import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { ease, spring } from '@/lib/motion';
 import { toast } from 'sonner';
 import { Badge, Button, EmptyState, Skeleton } from '@/components/ui';
 import { LevelBadge, ProgressBar } from '@/components/Badges';
@@ -68,7 +70,12 @@ export function FormationPage() {
   }, [data, t]);
 
   const playable = flat.filter((i) => i.playable);
-  const requested = params.get('v');
+  // While this page animates out (after navigating away) the URL no longer has
+  // ?v=…; keep showing the lesson that was open so nothing re-animates mid-exit.
+  const isPresent = useIsPresent();
+  const lastRequested = useRef<string | null>(null);
+  if (isPresent) lastRequested.current = params.get('v');
+  const requested = lastRequested.current;
   const current =
     playable.find((i) => i.id === requested) ??
     playable.find((i) => !data?.progress[i.id]?.completed) ??
@@ -162,7 +169,7 @@ export function FormationPage() {
   const totalSeconds = flat.reduce((s, i) => s + (i.duration_seconds ?? 0), 0);
   const isDone = current ? !!progress[current.id]?.completed : false;
 
-  const lessonList = (
+  const renderLessonList = (scope: string) => (
     <div className="card overflow-hidden">
       <div className="border-b border-blush-100 p-5">
         <h2 className="text-lg font-semibold">{t('formation.content')}</h2>
@@ -194,16 +201,25 @@ export function FormationPage() {
                 const active = item.id === current?.id;
                 const done = progress[item.id]?.completed;
                 return (
-                  <button
+                  <motion.button
                     key={item.id}
                     disabled={!item.playable}
                     onClick={() => select(item.id)}
+                    whileTap={item.playable ? { scale: 0.98 } : undefined}
                     className={cn(
-                      'flex w-full items-center gap-3 border-s-[3px] px-5 py-3 text-start transition',
-                      active ? 'border-blush-500 bg-blush-50' : 'border-transparent hover:bg-blush-50/60',
+                      'relative flex w-full items-center gap-3 px-5 py-3 text-start transition-colors',
+                      !active && 'hover:bg-blush-50/60',
                       !item.playable && 'cursor-not-allowed opacity-60',
                     )}
                   >
+                    {active && (
+                      <motion.span
+                        layoutId={`lesson-active-${scope}`}
+                        className="absolute inset-0 border-s-[3px] border-blush-500 bg-blush-50"
+                        transition={spring}
+                      />
+                    )}
+                    <span className="relative flex shrink-0">
                     {!item.playable ? (
                       <Lock className="h-4 w-4 shrink-0 text-muted" />
                     ) : done ? (
@@ -213,14 +229,15 @@ export function FormationPage() {
                     ) : (
                       <Circle className="h-4 w-4 shrink-0 text-blush-200" />
                     )}
-                    <span className={cn('min-w-0 flex-1 text-sm', active ? 'font-semibold text-plum' : 'text-ink')}>
+                    </span>
+                    <span className={cn('relative min-w-0 flex-1 text-sm', active ? 'font-semibold text-plum' : 'text-ink')}>
                       <span className="line-clamp-2">{item.title}</span>
                       {item.is_free_preview && !hasAccess && <span className="mt-0.5 block text-[11px] text-rosegold">{t('formation.freePreview')}</span>}
                     </span>
-                    <span className="shrink-0 text-xs tabular-nums text-muted" dir="ltr">
+                    <span className="relative shrink-0 text-xs tabular-nums text-muted" dir="ltr">
                       {formatDuration(item.duration_seconds)}
                     </span>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -231,7 +248,7 @@ export function FormationPage() {
   );
 
   return (
-    <div className="animate-fade-in">
+    <div>
       <Link to={hasAccess ? '/' : '/catalog'} className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-plum">
         <ChevronLeft className="rtl-flip h-4 w-4" /> {t('common.back')}
       </Link>
@@ -260,14 +277,23 @@ export function FormationPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0 space-y-5">
           {current ? (
-            <VideoPlayer
-              key={current.id}
-              videoId={current.id}
-              watermark={profile?.email ?? ''}
-              startAt={progress[current.id]?.completed ? 0 : progress[current.id]?.last_position_seconds ?? 0}
-              onProgress={onProgress}
-              onEnded={() => void saveProgress(current.id, 0, true)}
-            />
+            <AnimatePresence mode="wait" initial={true}>
+              <motion.div
+                key={current.id}
+                initial={{ opacity: 0, scale: 0.97, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.985, filter: 'blur(6px)' }}
+                transition={{ duration: 0.45, ease }}
+              >
+                <VideoPlayer
+                  videoId={current.id}
+                  watermark={profile?.email ?? ''}
+                  startAt={progress[current.id]?.completed ? 0 : progress[current.id]?.last_position_seconds ?? 0}
+                  onProgress={onProgress}
+                  onEnded={() => void saveProgress(current.id, 0, true)}
+                />
+              </motion.div>
+            </AnimatePresence>
           ) : (
             <div className="flex aspect-video items-center justify-center overflow-hidden rounded-2xl bg-blush-gradient">
               <div className="text-center">
@@ -278,15 +304,23 @@ export function FormationPage() {
           )}
 
           {current && (
-            <div className="card p-5">
+            <div className="card overflow-hidden p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0">
+                <AnimatePresence mode="wait">
+                <motion.div
+                  key={current.id}
+                  className="min-w-0"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0, transition: { duration: 0.35, delay: 0.1, ease } }}
+                  exit={{ opacity: 0, y: -6, transition: { duration: 0.15 } }}
+                >
                   <h2 className="text-xl font-semibold">{current.title}</h2>
                   <div className="mt-1 flex items-center gap-2 text-sm text-muted">
                     <Clock className="h-4 w-4" /> <span dir="ltr">{formatDuration(current.duration_seconds)}</span>
                     {current.is_free_preview && <Badge tone="gold">{t('formation.freePreview')}</Badge>}
                   </div>
-                </div>
+                </motion.div>
+                </AnimatePresence>
                 {hasAccess && (
                   <Button
                     variant={isDone ? 'subtle' : 'secondary'}
@@ -316,12 +350,15 @@ export function FormationPage() {
                   key={k}
                   onClick={() => setTab(k)}
                   className={cn(
-                    'border-b-2 px-5 py-3 text-sm font-medium transition',
+                    'relative px-5 py-3 text-sm font-medium transition-colors',
                     k === 'content' && 'lg:hidden',
-                    tab === k ? 'border-blush-500 text-plum' : 'border-transparent text-muted hover:text-plum',
+                    tab === k ? 'text-plum' : 'text-muted hover:text-plum',
                   )}
                 >
                   {t(`formation.${k}`)}
+                  {tab === k && (
+                    <motion.span layoutId="formation-tab-underline" className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-gradient" transition={spring} />
+                  )}
                 </button>
               ))}
             </div>
@@ -329,12 +366,12 @@ export function FormationPage() {
               {current?.description && <p>{current.description}</p>}
               {formation.description ? <p>{formation.description}</p> : !current?.description && <p className="text-muted">{t('formation.noDescription')}</p>}
             </div>
-            {tab === 'content' && <div className="lg:hidden [&>.card]:rounded-none [&>.card]:border-0 [&>.card]:shadow-none">{lessonList}</div>}
+            {tab === 'content' && <div className="lg:hidden [&>.card]:rounded-none [&>.card]:border-0 [&>.card]:shadow-none">{renderLessonList('mobile')}</div>}
           </div>
         </div>
 
         <aside className="hidden lg:block">
-          <div className="sticky top-24">{lessonList}</div>
+          <div className="sticky top-24">{renderLessonList('desktop')}</div>
         </aside>
       </div>
     </div>

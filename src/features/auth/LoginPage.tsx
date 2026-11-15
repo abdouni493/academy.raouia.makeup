@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Lock, Mail, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button, Field, Input } from '@/components/ui';
@@ -61,15 +62,30 @@ export function LoginPage() {
 
   return (
     <AuthShell>
+      <AnimatePresence mode="wait" initial={false}>
       {mode === 'setup' && showSetup ? (
+        <motion.div
+          key="setup"
+          initial={{ opacity: 0, x: 24, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, x: -24, filter: 'blur(4px)' }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        >
         <AdminSetupForm
           onBack={() => setMode('login')}
           onCreated={() => {
             void adminExists.refetch();
           }}
         />
+        </motion.div>
       ) : (
-        <div className="animate-fade-in">
+        <motion.div
+          key="login"
+          initial={{ opacity: 0, x: -24, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, x: 24, filter: 'blur(4px)' }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        >
           <h1 className="text-3xl font-semibold sm:text-4xl">{t('auth.welcomeBack')}</h1>
           <p className="mt-2 text-muted">{t('auth.subtitle')}</p>
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5" noValidate>
@@ -115,8 +131,9 @@ export function LoginPage() {
               </Button>
             </>
           )}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </AuthShell>
   );
 }

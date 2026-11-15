@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { CheckCircle2, Crown, Gem, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { StaggerGroup, StaggerItem } from '@/components/Motion';
 import { Badge, Button, CardGridSkeleton, EmptyState } from '@/components/ui';
 import { CoverImage } from '@/components/CoverImage';
 import { PageHeader } from '@/components/PageHeader';
@@ -33,9 +34,10 @@ export function CatalogPage() {
           <h2 className="mb-5 flex items-center gap-2 text-2xl font-semibold">
             <Crown className="h-6 w-6 text-rosegold" /> {t('catalog.packs')}
           </h2>
-          <div className="grid gap-6 lg:grid-cols-2">
+          <StaggerGroup className="grid gap-6 lg:grid-cols-2">
             {packs.data.map((p) => (
-              <article key={p.id} className="card group flex animate-fade-in flex-col overflow-hidden sm:flex-row">
+              <StaggerItem key={p.id} className="h-full">
+              <article className="card group flex h-full flex-col overflow-hidden transition-shadow duration-300 hover:shadow-glow sm:flex-row">
                 <div className="relative aspect-[16/10] overflow-hidden sm:aspect-auto sm:w-2/5">
                   <CoverImage src={p.cover_url} alt={p.title} seed={p.id} pack />
                   <span className="absolute start-3 top-3">
@@ -80,19 +82,22 @@ export function CatalogPage() {
                   </div>
                 </div>
               </article>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </section>
       )}
 
       {!!catalog.data?.length && (
         <section>
           <h2 className="mb-5 text-2xl font-semibold">{t('catalog.formations')}</h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {catalog.data.map((f) => (
-              <FormationCard key={f.id} entry={f} requestMessage={t('catalog.waFormation', { name: f.title, email })} />
+              <StaggerItem key={f.id}>
+                <FormationCard entry={f} requestMessage={t('catalog.waFormation', { name: f.title, email })} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </section>
       )}
     </div>
