@@ -1,0 +1,116 @@
+{
+  "common": {
+    "save": "Enregistrer", "cancel": "Annuler", "delete": "Supprimer", "edit": "Modifier", "create": "Créer",
+    "close": "Fermer", "confirm": "Confirmer", "search": "Rechercher…", "loading": "Chargement…", "back": "Retour",
+    "actions": "Actions", "copy": "Copier", "copied": "Copié !", "optional": "facultatif", "minutes": "min",
+    "free": "Gratuit", "published": "Publié", "draft": "Brouillon", "error": "Une erreur est survenue",
+    "retry": "Réessayer", "all": "Tous", "active": "Actif", "inactive": "Inactif", "logout": "Déconnexion",
+    "language": "Langue", "none": "Aucun", "saved": "Enregistré", "deleted": "Supprimé", "required": "Champ obligatoire",
+    "status": "Statut", "add": "Ajouter", "view": "Voir", "open": "Ouvrir", "invalidEmail": "E-mail invalide",
+    "noResults": "Aucun résultat", "dragToReorder": "Glisser pour réordonner", "orderSaved": "Ordre enregistré"
+  },
+  "nav": {
+    "dashboard": "Accueil", "catalog": "Catalogue", "profile": "Profil", "admin": "Administration",
+    "formations": "Formations", "packs": "Packs", "clients": "Clientes", "clientArea": "Espace élève",
+    "overview": "Tableau de bord"
+  },
+  "auth": {
+    "welcomeBack": "Bon retour parmi nous", "subtitle": "Connectez-vous pour accéder à vos formations.",
+    "tagline": "L'art du maquillage professionnel, à votre rythme.",
+    "taglineSub": "Des formations exclusives, pensées pour sublimer votre talent.",
+    "email": "Adresse e-mail", "password": "Mot de passe", "signIn": "Se connecter", "forgot": "Mot de passe oublié ?",
+    "forgotTitle": "Réinitialiser le mot de passe", "forgotHelp": "Saisissez votre e-mail : nous vous enverrons un lien de réinitialisation.",
+    "sendReset": "Envoyer le lien", "resetSent": "Si un compte existe, un e-mail vient d'être envoyé.",
+    "backToLogin": "Retour à la connexion", "resetTitle": "Nouveau mot de passe", "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe", "updatePassword": "Mettre à jour",
+    "passwordUpdated": "Mot de passe mis à jour", "invalidCredentials": "E-mail ou mot de passe incorrect",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas", "min8": "8 caractères minimum",
+    "noAccount": "Pas encore de compte ? Contactez-nous pour obtenir votre accès.",
+    "suspendedTitle": "Compte suspendu", "suspendedText": "Votre accès a été suspendu. Contactez-nous pour plus d'informations.",
+    "contactUs": "Nous contacter", "invalidLink": "Lien invalide ou expiré. Demandez un nouveau lien."
+  },
+  "levels": { "beginner": "Débutant", "intermediate": "Intermédiaire", "pro": "Professionnel" },
+  "status": { "uploading": "Envoi", "processing": "Traitement", "ready": "Prête", "failed": "Échec" },
+  "client": {
+    "hello": "Bonjour {{name}}", "welcome": "Prête à sublimer votre talent aujourd'hui ?",
+    "continueWatching": "Reprendre la lecture", "myFormations": "Mes formations",
+    "noFormations": "Aucune formation pour le moment",
+    "noFormationsText": "Découvrez le catalogue et demandez l'accès à la formation de votre choix.",
+    "exploreCatalog": "Voir le catalogue", "completedPct": "{{pct}} % terminé", "videosCount": "{{count}} vidéos",
+    "resume": "Reprendre"
+  },
+  "catalog": {
+    "title": "Catalogue", "subtitle": "Formations et packs exclusifs pour maîtriser l'art du maquillage.",
+    "packs": "Packs", "formations": "Formations", "requestAccess": "Demander l'accès", "owned": "Accès inclus",
+    "locked": "Verrouillé", "includes": "{{count}} formations incluses",
+    "waFormation": "Bonjour, je souhaite obtenir l'accès à la formation « {{name}} ». Mon e-mail : {{email}}",
+    "waPack": "Bonjour, je souhaite obtenir l'accès au pack « {{name}} ». Mon e-mail : {{email}}",
+    "empty": "Le catalogue sera bientôt disponible."
+  },
+  "formation": {
+    "content": "Contenu", "description": "Description", "markCompleted": "Marquer comme terminée",
+    "completed": "Terminée", "next": "Suivante", "previous": "Précédente",
+    "lockedTitle": "Formation verrouillée", "lockedText": "Cette formation ne fait pas encore partie de vos accès.",
+    "notReady": "Cette vidéo est en cours de traitement.", "noVideos": "Aucune vidéo disponible pour le moment.",
+    "unsectioned": "Autres vidéos", "freePreview": "Aperçu gratuit", "playerError": "Impossible de charger la vidéo.",
+    "lessons": "{{count}} leçons", "notFound": "Formation introuvable", "noDescription": "Aucune description."
+  },
+  "profile": {
+    "title": "Mon profil", "info": "Informations personnelles", "fullName": "Nom complet", "phone": "Téléphone",
+    "changePassword": "Changer le mot de passe", "passwordChanged": "Mot de passe modifié", "emailHint": "Contactez-nous pour modifier votre e-mail."
+  },
+  "admin": {
+    "dashboardTitle": "Tableau de bord", "dashboardSubtitle": "Vue d'ensemble de votre académie.",
+    "statClients": "Clientes", "statActive": "Clientes actives", "statFormations": "Formations", "statVideos": "Vidéos",
+    "statPacks": "Packs", "statMinutes": "Minutes de vidéo", "recentClients": "Clientes récentes",
+    "videosAttention": "Vidéos en traitement / en échec", "noAttention": "Toutes les vidéos sont prêtes ✨"
+  },
+  "formations": {
+    "title": "Formations", "new": "Nouvelle formation", "edit": "Modifier la formation", "empty": "Aucune formation",
+    "emptyText": "Créez votre première formation pour commencer.", "fieldTitle": "Titre", "slug": "Identifiant URL",
+    "shortDescription": "Description courte", "description": "Description complète", "level": "Niveau",
+    "cover": "Image de couverture", "coverHint": "JPEG, PNG ou WEBP — 5 Mo max", "changeCover": "Changer l'image",
+    "published": "Publiée", "deleteConfirm": "Supprimer cette formation ?",
+    "deleteText": "Toutes ses vidéos seront supprimées définitivement de Bunny Stream.", "manage": "Gérer le contenu",
+    "videosCount": "{{count}} vidéos", "details": "Détails", "slugTaken": "Cet identifiant est déjà utilisé"
+  },
+  "sections": {
+    "title": "Chapitres", "add": "Ajouter un chapitre", "newTitle": "Titre du chapitre", "rename": "Renommer",
+    "deleteConfirm": "Supprimer ce chapitre ?", "deleteText": "Les vidéos du chapitre seront conservées sans chapitre.",
+    "empty": "Aucun chapitre. Les vidéos peuvent aussi être ajoutées sans chapitre.", "noSection": "Sans chapitre"
+  },
+  "videos": {
+    "title": "Vidéos", "upload": "Ajouter des vidéos", "dropzone": "Glissez-déposez vos vidéos ici",
+    "dropHint": "ou cliquez pour parcourir — MP4, MOV, MKV… (envoi reprenable)", "targetSection": "Chapitre de destination",
+    "speed": "{{speed}}/s", "cancelUpload": "Annuler l'envoi", "uploadDone": "Envoi terminé", "uploadFailed": "Échec de l'envoi",
+    "uploadCancelled": "Envoi annulé", "queued": "En attente", "preparing": "Préparation…",
+    "editVideo": "Modifier la vidéo", "fieldTitle": "Titre", "description": "Description", "freePreview": "Aperçu gratuit",
+    "section": "Chapitre", "refresh": "Actualiser le statut", "preview": "Prévisualiser", "deleteConfirm": "Supprimer cette vidéo ?",
+    "deleteText": "La vidéo sera supprimée définitivement de Bunny Stream.", "empty": "Aucune vidéo pour le moment.",
+    "leaveWarning": "Des envois sont en cours. Quitter la page les annulera.", "uploadsInProgress": "Envois en cours",
+    "refreshed": "Statut actualisé", "notVideo": "Ce fichier n'est pas une vidéo : {{name}}"
+  },
+  "packs": {
+    "title": "Packs", "new": "Nouveau pack", "edit": "Modifier le pack", "empty": "Aucun pack",
+    "emptyText": "Regroupez plusieurs formations dans un pack.", "price": "Prix", "currency": "Devise",
+    "formations": "Formations du pack", "addFormation": "Ajouter une formation", "deleteConfirm": "Supprimer ce pack ?",
+    "deleteText": "Les accès accordés via ce pack seront aussi supprimés.", "includes": "{{count}} formations",
+    "noFormations": "Aucune formation dans ce pack."
+  },
+  "clients": {
+    "title": "Clientes", "new": "Nouvelle cliente", "edit": "Modifier la cliente", "empty": "Aucune cliente",
+    "emptyText": "Créez un compte pour votre première élève.", "fullName": "Nom complet", "email": "E-mail",
+    "phone": "Téléphone", "notes": "Notes internes", "password": "Mot de passe", "generate": "Générer",
+    "sendWhatsapp": "Envoyer par WhatsApp",
+    "credentialsMessage": "Bonjour {{name}} ✨\nVotre accès à {{brand}} est prêt !\n\nLien : {{url}}\nE-mail : {{email}}\nMot de passe : {{password}}\n\nPensez à changer votre mot de passe depuis votre profil.",
+    "created": "Compte créé", "credentialsTitle": "Identifiants de connexion", "credentialsHint": "Copiez ces identifiants maintenant : le mot de passe ne sera plus affiché.",
+    "resetPassword": "Réinitialiser le mot de passe", "passwordReset": "Mot de passe réinitialisé",
+    "activate": "Activer", "deactivate": "Désactiver", "activated": "Compte activé", "deactivated": "Compte désactivé",
+    "deleteConfirm": "Supprimer cette cliente ?", "deleteText": "Son compte, ses accès et sa progression seront supprimés définitivement.",
+    "access": "Accès", "grantAccess": "Accorder un accès", "revoke": "Retirer", "revokeConfirm": "Retirer cet accès ?",
+    "type": "Type", "pack": "Pack", "formation": "Formation", "expiresAt": "Expire le", "noExpiry": "Sans expiration",
+    "expired": "Expiré", "noGrants": "Aucun accès accordé.", "progress": "Progression", "joined": "Inscrite le",
+    "accessGranted": "Accès accordé", "accessRevoked": "Accès retiré", "choose": "Choisir…", "noProgress": "Aucune progression pour le moment.",
+    "suspended": "Suspendue", "contact": "Contacter", "accessUpdated": "Accès mis à jour"
+  }
+}

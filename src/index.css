@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    @apply bg-blush-50 font-sans text-ink antialiased;
+    background-image: radial-gradient(1200px 500px at 100% -10%, rgba(247, 231, 206, 0.55), transparent 60%),
+      radial-gradient(900px 400px at -10% 0%, rgba(249, 208, 220, 0.45), transparent 60%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+  html.lang-ar body, html.lang-ar .font-sans { font-family: Cairo, Inter, system-ui, sans-serif; }
+  html.lang-ar .font-display { font-family: Cairo, 'Playfair Display', serif; font-weight: 700; }
+  h1, h2, h3 { @apply font-display text-plum; }
+  ::selection { @apply bg-blush-200 text-plum; }
+  input[type='date']::-webkit-calendar-picker-indicator { opacity: 0.6; }
+}
+
+@layer components {
+  .card { @apply rounded-2xl border border-blush-100 bg-white/90 shadow-soft backdrop-blur-sm; }
+  .focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blush-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white; }
+  .text-gradient { @apply bg-brand-gradient bg-clip-text text-transparent; }
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #F2A7BC transparent; }
+}
+
+@layer utilities {
+  .rtl-flip { transform: scaleX(1); }
+  [dir='rtl'] .rtl-flip { transform: scaleX(-1); }
+}

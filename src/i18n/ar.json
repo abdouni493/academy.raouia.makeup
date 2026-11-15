@@ -1,0 +1,116 @@
+{
+  "common": {
+    "save": "حفظ", "cancel": "إلغاء", "delete": "حذف", "edit": "تعديل", "create": "إنشاء",
+    "close": "إغلاق", "confirm": "تأكيد", "search": "بحث…", "loading": "جارٍ التحميل…", "back": "رجوع",
+    "actions": "إجراءات", "copy": "نسخ", "copied": "تم النسخ!", "optional": "اختياري", "minutes": "د",
+    "free": "مجاني", "published": "منشور", "draft": "مسودة", "error": "حدث خطأ ما",
+    "retry": "إعادة المحاولة", "all": "الكل", "active": "نشط", "inactive": "غير نشط", "logout": "تسجيل الخروج",
+    "language": "اللغة", "none": "لا شيء", "saved": "تم الحفظ", "deleted": "تم الحذف", "required": "حقل مطلوب",
+    "status": "الحالة", "add": "إضافة", "view": "عرض", "open": "فتح", "invalidEmail": "بريد إلكتروني غير صالح",
+    "noResults": "لا توجد نتائج", "dragToReorder": "اسحب لإعادة الترتيب", "orderSaved": "تم حفظ الترتيب"
+  },
+  "nav": {
+    "dashboard": "الرئيسية", "catalog": "الكتالوج", "profile": "الملف الشخصي", "admin": "الإدارة",
+    "formations": "الدورات", "packs": "الباقات", "clients": "العميلات", "clientArea": "فضاء الطالبة",
+    "overview": "لوحة التحكم"
+  },
+  "auth": {
+    "welcomeBack": "مرحبًا بعودتك", "subtitle": "سجّلي الدخول للوصول إلى دوراتك.",
+    "tagline": "فن المكياج الاحترافي، على وتيرتك الخاصة.",
+    "taglineSub": "دورات حصرية صُمّمت لإبراز موهبتك.",
+    "email": "البريد الإلكتروني", "password": "كلمة المرور", "signIn": "تسجيل الدخول", "forgot": "نسيتِ كلمة المرور؟",
+    "forgotTitle": "إعادة تعيين كلمة المرور", "forgotHelp": "أدخلي بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.",
+    "sendReset": "إرسال الرابط", "resetSent": "إذا كان الحساب موجودًا، فقد تم إرسال بريد إلكتروني.",
+    "backToLogin": "العودة لتسجيل الدخول", "resetTitle": "كلمة مرور جديدة", "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور", "updatePassword": "تحديث",
+    "passwordUpdated": "تم تحديث كلمة المرور", "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "passwordsMismatch": "كلمتا المرور غير متطابقتين", "min8": "8 أحرف على الأقل",
+    "noAccount": "ليس لديك حساب؟ تواصلي معنا للحصول على وصول.",
+    "suspendedTitle": "الحساب موقوف", "suspendedText": "تم إيقاف وصولك. يرجى التواصل معنا لمزيد من المعلومات.",
+    "contactUs": "تواصلي معنا", "invalidLink": "الرابط غير صالح أو منتهي الصلاحية. اطلبي رابطًا جديدًا."
+  },
+  "levels": { "beginner": "مبتدئ", "intermediate": "متوسط", "pro": "احترافي" },
+  "status": { "uploading": "قيد الرفع", "processing": "قيد المعالجة", "ready": "جاهز", "failed": "فشل" },
+  "client": {
+    "hello": "مرحبًا {{name}}", "welcome": "هل أنتِ مستعدة لإبراز موهبتك اليوم؟",
+    "continueWatching": "متابعة المشاهدة", "myFormations": "دوراتي",
+    "noFormations": "لا توجد دورات حاليًا",
+    "noFormationsText": "تصفّحي الكتالوج واطلبي الوصول إلى الدورة التي تريدينها.",
+    "exploreCatalog": "تصفّح الكتالوج", "completedPct": "مكتمل بنسبة {{pct}}٪", "videosCount": "{{count}} فيديو",
+    "resume": "متابعة"
+  },
+  "catalog": {
+    "title": "الكتالوج", "subtitle": "دورات وباقات حصرية لإتقان فن المكياج.",
+    "packs": "الباقات", "formations": "الدورات", "requestAccess": "طلب الوصول", "owned": "الوصول متاح",
+    "locked": "مقفل", "includes": "تتضمن {{count}} دورات",
+    "waFormation": "مرحبًا، أرغب في الحصول على الوصول إلى دورة «{{name}}». بريدي الإلكتروني: {{email}}",
+    "waPack": "مرحبًا، أرغب في الحصول على الوصول إلى باقة «{{name}}». بريدي الإلكتروني: {{email}}",
+    "empty": "سيكون الكتالوج متاحًا قريبًا."
+  },
+  "formation": {
+    "content": "المحتوى", "description": "الوصف", "markCompleted": "تحديد كمكتمل",
+    "completed": "مكتمل", "next": "التالي", "previous": "السابق",
+    "lockedTitle": "دورة مقفلة", "lockedText": "هذه الدورة ليست ضمن وصولك بعد.",
+    "notReady": "هذا الفيديو قيد المعالجة.", "noVideos": "لا توجد فيديوهات متاحة حاليًا.",
+    "unsectioned": "فيديوهات أخرى", "freePreview": "معاينة مجانية", "playerError": "تعذّر تحميل الفيديو.",
+    "lessons": "{{count}} درس", "notFound": "الدورة غير موجودة", "noDescription": "لا يوجد وصف."
+  },
+  "profile": {
+    "title": "ملفي الشخصي", "info": "المعلومات الشخصية", "fullName": "الاسم الكامل", "phone": "الهاتف",
+    "changePassword": "تغيير كلمة المرور", "passwordChanged": "تم تغيير كلمة المرور", "emailHint": "تواصلي معنا لتغيير بريدك الإلكتروني."
+  },
+  "admin": {
+    "dashboardTitle": "لوحة التحكم", "dashboardSubtitle": "نظرة عامة على أكاديميتك.",
+    "statClients": "العميلات", "statActive": "العميلات النشطات", "statFormations": "الدورات", "statVideos": "الفيديوهات",
+    "statPacks": "الباقات", "statMinutes": "دقائق الفيديو", "recentClients": "أحدث العميلات",
+    "videosAttention": "فيديوهات قيد المعالجة / فاشلة", "noAttention": "جميع الفيديوهات جاهزة ✨"
+  },
+  "formations": {
+    "title": "الدورات", "new": "دورة جديدة", "edit": "تعديل الدورة", "empty": "لا توجد دورات",
+    "emptyText": "أنشئي دورتك الأولى للبدء.", "fieldTitle": "العنوان", "slug": "معرّف الرابط",
+    "shortDescription": "وصف قصير", "description": "الوصف الكامل", "level": "المستوى",
+    "cover": "صورة الغلاف", "coverHint": "JPEG أو PNG أو WEBP — 5 ميغابايت كحد أقصى", "changeCover": "تغيير الصورة",
+    "published": "منشورة", "deleteConfirm": "حذف هذه الدورة؟",
+    "deleteText": "سيتم حذف جميع فيديوهاتها نهائيًا من Bunny Stream.", "manage": "إدارة المحتوى",
+    "videosCount": "{{count}} فيديو", "details": "التفاصيل", "slugTaken": "هذا المعرّف مستخدم بالفعل"
+  },
+  "sections": {
+    "title": "الفصول", "add": "إضافة فصل", "newTitle": "عنوان الفصل", "rename": "إعادة التسمية",
+    "deleteConfirm": "حذف هذا الفصل؟", "deleteText": "سيتم الاحتفاظ بفيديوهاته بدون فصل.",
+    "empty": "لا توجد فصول. يمكن أيضًا إضافة الفيديوهات بدون فصل.", "noSection": "بدون فصل"
+  },
+  "videos": {
+    "title": "الفيديوهات", "upload": "إضافة فيديوهات", "dropzone": "اسحبي وأفلتي فيديوهاتك هنا",
+    "dropHint": "أو انقري للتصفح — MP4، MOV، MKV… (رفع قابل للاستئناف)", "targetSection": "الفصل المستهدف",
+    "speed": "{{speed}}/ث", "cancelUpload": "إلغاء الرفع", "uploadDone": "اكتمل الرفع", "uploadFailed": "فشل الرفع",
+    "uploadCancelled": "تم إلغاء الرفع", "queued": "في الانتظار", "preparing": "جارٍ التحضير…",
+    "editVideo": "تعديل الفيديو", "fieldTitle": "العنوان", "description": "الوصف", "freePreview": "معاينة مجانية",
+    "section": "الفصل", "refresh": "تحديث الحالة", "preview": "معاينة", "deleteConfirm": "حذف هذا الفيديو؟",
+    "deleteText": "سيتم حذف الفيديو نهائيًا من Bunny Stream.", "empty": "لا توجد فيديوهات بعد.",
+    "leaveWarning": "هناك عمليات رفع جارية. مغادرة الصفحة ستلغيها.", "uploadsInProgress": "عمليات رفع جارية",
+    "refreshed": "تم تحديث الحالة", "notVideo": "هذا الملف ليس فيديو: {{name}}"
+  },
+  "packs": {
+    "title": "الباقات", "new": "باقة جديدة", "edit": "تعديل الباقة", "empty": "لا توجد باقات",
+    "emptyText": "اجمعي عدة دورات في باقة واحدة.", "price": "السعر", "currency": "العملة",
+    "formations": "دورات الباقة", "addFormation": "إضافة دورة", "deleteConfirm": "حذف هذه الباقة؟",
+    "deleteText": "سيتم أيضًا حذف الوصول الممنوح عبر هذه الباقة.", "includes": "{{count}} دورات",
+    "noFormations": "لا توجد دورات في هذه الباقة."
+  },
+  "clients": {
+    "title": "العميلات", "new": "عميلة جديدة", "edit": "تعديل العميلة", "empty": "لا توجد عميلات",
+    "emptyText": "أنشئي حسابًا لأول طالبة.", "fullName": "الاسم الكامل", "email": "البريد الإلكتروني",
+    "phone": "الهاتف", "notes": "ملاحظات داخلية", "password": "كلمة المرور", "generate": "توليد",
+    "sendWhatsapp": "إرسال عبر واتساب",
+    "credentialsMessage": "مرحبًا {{name}} ✨\nوصولك إلى {{brand}} جاهز!\n\nالرابط: {{url}}\nالبريد الإلكتروني: {{email}}\nكلمة المرور: {{password}}\n\nيرجى تغيير كلمة المرور من ملفك الشخصي.",
+    "created": "تم إنشاء الحساب", "credentialsTitle": "بيانات تسجيل الدخول", "credentialsHint": "انسخي هذه البيانات الآن: لن تُعرض كلمة المرور مرة أخرى.",
+    "resetPassword": "إعادة تعيين كلمة المرور", "passwordReset": "تمت إعادة تعيين كلمة المرور",
+    "activate": "تفعيل", "deactivate": "إيقاف", "activated": "تم تفعيل الحساب", "deactivated": "تم إيقاف الحساب",
+    "deleteConfirm": "حذف هذه العميلة؟", "deleteText": "سيتم حذف حسابها ووصولها وتقدّمها نهائيًا.",
+    "access": "الوصول", "grantAccess": "منح وصول", "revoke": "سحب", "revokeConfirm": "سحب هذا الوصول؟",
+    "type": "النوع", "pack": "باقة", "formation": "دورة", "expiresAt": "ينتهي في", "noExpiry": "بدون انتهاء",
+    "expired": "منتهي", "noGrants": "لم يُمنح أي وصول.", "progress": "التقدّم", "joined": "تاريخ التسجيل",
+    "accessGranted": "تم منح الوصول", "accessRevoked": "تم سحب الوصول", "choose": "اختاري…", "noProgress": "لا يوجد تقدّم بعد.",
+    "suspended": "موقوفة", "contact": "تواصل", "accessUpdated": "تم تحديث الوصول"
+  }
+}
