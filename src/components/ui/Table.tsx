@@ -9,13 +9,13 @@ export function Table({ children, className }: { children: ReactNode; className?
   );
 }
 export function THead({ children }: { children: ReactNode }) {
-  return <thead className="bg-surface-tertiary/60 text-footnote text-label-secondary">{children}</thead>;
+  return <thead className="bg-grouped text-footnote text-label-secondary">{children}</thead>;
 }
 export function Th({ className, ...rest }: ThHTMLAttributes<HTMLTableCellElement>) {
   return <th scope="col" className={cn('px-4 py-3 text-start font-medium sm:px-6', className)} {...rest} />;
 }
 export function Tr({ className, ...rest }: HTMLAttributes<HTMLTableRowElement>) {
-  return <tr className={cn('border-t border-separator/70 transition-colors hover:bg-fill-secondary/60', className)} {...rest} />;
+  return <tr className={cn('border-t border-separator transition-colors hover:bg-fill-tertiary', className)} {...rest} />;
 }
 export function Td({ className, ...rest }: TdHTMLAttributes<HTMLTableCellElement>) {
   return <td className={cn('px-4 py-4 align-middle sm:px-6', className)} {...rest} />;

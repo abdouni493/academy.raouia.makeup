@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/motion';
 import {
   DndContext,
   KeyboardSensor,
@@ -67,7 +67,7 @@ function SortableRow({ id, children }: { id: string; children: (handle: ReactNod
       ref={setActivatorNodeRef}
       {...attributes}
       {...listeners}
-      className="focus-ring flex h-11 w-11 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg text-muted transition hover:bg-blush-100 hover:text-plum active:cursor-grabbing"
+      className="focus-ring flex h-11 w-11 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg text-label-secondary transition-colors hover:bg-fill-tertiary hover:text-label active:cursor-grabbing"
       aria-label={t('common.dragToReorder')}
     >
       <GripVertical className="h-4 w-4" />
@@ -77,7 +77,7 @@ function SortableRow({ id, children }: { id: string; children: (handle: ReactNod
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition: reducedMotion ? undefined : transition }}
-      className={cn('relative', isDragging && 'z-10 opacity-90 shadow-glow')}
+      className={cn('relative', isDragging && 'z-10 rounded-xl bg-card shadow-elevated')}
     >
       {children(handle)}
     </div>

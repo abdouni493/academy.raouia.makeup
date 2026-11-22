@@ -1,84 +1,69 @@
 import type { Config } from 'tailwindcss';
 
+const rgb = (token: string) => `rgb(var(--${token}) / <alpha-value>)`;
+const mixed = (token: string) => `color-mix(in srgb, var(--${token}) calc(100% * <alpha-value>), transparent)`;
+const translucent = (token: string) => `rgb(var(--${token}) / calc(var(--${token}-alpha) * <alpha-value>))`;
+
 export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-          'surface': {
-            'DEFAULT': 'rgb(var(--background) / <alpha-value>)',
-            'primary': 'rgb(var(--background) / <alpha-value>)',
-            'secondary': 'rgb(var(--background-secondary) / <alpha-value>)',
-            'tertiary': 'rgb(var(--background-tertiary) / <alpha-value>)',
-            'inverse': 'rgb(var(--surface-inverse) / <alpha-value>)',
-          },
-          'label': {
-            'DEFAULT': 'rgb(var(--label) / <alpha-value>)',
-            'secondary': 'rgb(var(--label-secondary) / <alpha-value>)',
-            'tertiary': 'rgb(var(--label-tertiary) / <alpha-value>)',
-            'quaternary': 'rgb(var(--label-quaternary) / <alpha-value>)',
-          },
-          'accent': {
-            'DEFAULT': 'rgb(var(--accent) / <alpha-value>)',
-            'pressed': 'rgb(var(--accent-pressed) / <alpha-value>)',
-            'soft': 'rgb(var(--accent-soft) / <alpha-value>)',
-            'contrast': 'rgb(var(--accent-contrast) / <alpha-value>)',
-          },
-          'separator': 'rgb(var(--separator) / <alpha-value>)',
-          'control-border': 'rgb(var(--control-border) / <alpha-value>)',
-          'fill': {
-            'DEFAULT': 'rgb(var(--fill) / <alpha-value>)',
-            'secondary': 'rgb(var(--fill-secondary) / <alpha-value>)',
-          },
-          'material': 'rgb(var(--material) / <alpha-value>)',
-          'scrim': 'rgb(var(--scrim) / <alpha-value>)',
-          'sidebar': {
-            'DEFAULT': 'rgb(var(--sidebar) / <alpha-value>)',
-            'label': 'rgb(var(--sidebar-label) / <alpha-value>)',
-            'secondary': 'rgb(var(--sidebar-secondary) / <alpha-value>)',
-            'fill': 'rgb(var(--sidebar-fill) / <alpha-value>)',
-          },
-          'success': {
-            'DEFAULT': 'rgb(var(--success) / <alpha-value>)',
-            'soft': 'rgb(var(--success-soft) / <alpha-value>)',
-          },
-          'danger': {
-            'DEFAULT': 'rgb(var(--danger) / <alpha-value>)',
-            'soft': 'rgb(var(--danger-soft) / <alpha-value>)',
-          },
-          'warning': {
-            'DEFAULT': 'rgb(var(--warning) / <alpha-value>)',
-            'soft': 'rgb(var(--warning-soft) / <alpha-value>)',
-          },
-          'info': {
-            'DEFAULT': 'rgb(var(--info) / <alpha-value>)',
-            'soft': 'rgb(var(--info-soft) / <alpha-value>)',
-          },
-          'blush': {
-            '50': 'rgb(var(--blush-50) / <alpha-value>)',
-            '100': 'rgb(var(--blush-100) / <alpha-value>)',
-            '200': 'rgb(var(--blush-200) / <alpha-value>)',
-            '300': 'rgb(var(--blush-300) / <alpha-value>)',
-            '400': 'rgb(var(--blush-400) / <alpha-value>)',
-            '500': 'rgb(var(--blush-500) / <alpha-value>)',
-            '600': 'rgb(var(--blush-600) / <alpha-value>)',
-            '700': 'rgb(var(--blush-700) / <alpha-value>)',
-          },
-          'rosegold': {
-            'DEFAULT': 'rgb(var(--rosegold) / <alpha-value>)',
-            'light': 'rgb(var(--rosegold-light) / <alpha-value>)',
-          },
-          'champagne': 'rgb(var(--champagne) / <alpha-value>)',
-          'nude': 'rgb(var(--nude) / <alpha-value>)',
-          'plum': {
-            'DEFAULT': 'rgb(var(--label) / <alpha-value>)',
-            'light': 'rgb(var(--label-secondary) / <alpha-value>)',
-            'dark': 'rgb(var(--surface-inverse) / <alpha-value>)',
-          },
-          'ink': 'rgb(var(--label) / <alpha-value>)',
-          'muted': 'rgb(var(--label-secondary) / <alpha-value>)',
+        system: {
+          blue: rgb('system-blue'), green: rgb('system-green'), indigo: rgb('system-indigo'),
+          orange: rgb('system-orange'), pink: rgb('system-pink'), purple: rgb('system-purple'),
+          red: rgb('system-red'), teal: rgb('system-teal'), yellow: rgb('system-yellow'),
+          cyan: rgb('system-cyan'), mint: rgb('system-mint'), brown: rgb('system-brown'),
+          gray: rgb('system-gray'), 'gray-2': rgb('system-gray-2'), 'gray-3': rgb('system-gray-3'),
+          'gray-4': rgb('system-gray-4'), 'gray-5': rgb('system-gray-5'), 'gray-6': rgb('system-gray-6'),
         },
+        surface: {
+          DEFAULT: rgb('background'), primary: rgb('background'),
+          secondary: rgb('background-secondary'), tertiary: rgb('background-tertiary'),
+          inverse: rgb('surface-inverse'),
+        },
+        grouped: rgb('grouped'), card: rgb('card'),
+        label: {
+          DEFAULT: rgb('label'), secondary: rgb('secondary-ink'),
+          tertiary: rgb('tertiary-ink'), quaternary: rgb('tertiary-ink'),
+        },
+        accent: {
+          DEFAULT: rgb('accent'), pressed: mixed('accent-pressed'),
+          soft: mixed('accent-soft'), contrast: rgb('accent-contrast'),
+        },
+        separator: { DEFAULT: translucent('separator'), opaque: rgb('opaque-separator') },
+        'control-border': rgb('control-border'),
+        fill: {
+          DEFAULT: translucent('fill'), secondary: translucent('fill-secondary'),
+          tertiary: translucent('fill-tertiary'), quaternary: translucent('fill-quaternary'),
+        },
+        material: rgb('material'), scrim: rgb('scrim'),
+        sidebar: {
+          DEFAULT: rgb('sidebar'), label: rgb('sidebar-label'),
+          secondary: rgb('sidebar-secondary'), fill: rgb('sidebar-fill'),
+        },
+        success: { DEFAULT: rgb('success'), soft: mixed('success-soft') },
+        danger: { DEFAULT: rgb('danger'), soft: mixed('danger-soft') },
+        warning: { DEFAULT: rgb('warning'), soft: mixed('warning-soft') },
+        info: { DEFAULT: rgb('info'), soft: mixed('info-soft') },
+        blush: {
+          50: rgb('blush-50'), 100: rgb('blush-100'), 200: rgb('blush-200'), 300: rgb('blush-300'),
+          400: rgb('blush-400'), 500: rgb('blush-500'), 600: rgb('blush-600'), 700: rgb('blush-700'),
+        },
+        rosegold: { DEFAULT: rgb('rosegold'), light: rgb('rosegold-light') },
+        champagne: rgb('champagne'), nude: rgb('nude'),
+        plum: { DEFAULT: rgb('label'), light: rgb('secondary-ink'), dark: rgb('surface-inverse') },
+        ink: rgb('label'), muted: rgb('secondary-ink'),
+      },
+      // Foreground ink must work over grouped, tinted, and translucent surfaces.
+      // Keep backgrounds on the original UIKit swatch.
+      textColor: {
+        accent: { DEFAULT: mixed('accent-ink'), pressed: mixed('accent-pressed-ink') },
+        success: mixed('success-ink'), danger: mixed('danger-ink'),
+        warning: mixed('warning-ink'), info: mixed('info-ink'),
+      },
+      ringColor: { accent: mixed('accent-ink'), danger: mixed('danger-ink') },
       fontFamily: {
         sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'sans-serif'],
         display: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'sans-serif'],
@@ -101,12 +86,13 @@ export default {
       borderRadius: { lg: '0.75rem', xl: '1rem', '2xl': '1.25rem', '3xl': '1.75rem', sheet: '1.75rem' },
       boxShadow: {
         soft: '0 2px 8px rgb(var(--shadow) / 0.04), 0 8px 24px rgb(var(--shadow) / 0.05)',
+        glass: 'inset 0 1px 0 var(--glass-highlight), inset 0 0 0 1px var(--glass-keyline), 0 2px 8px rgb(var(--shadow) / 0.08)',
         glow: '0 2px 8px rgb(var(--shadow) / 0.08)',
         elevated: '0 8px 32px rgb(var(--shadow) / 0.12), 0 1px 4px rgb(var(--shadow) / 0.08)',
         sheet: '0 24px 80px rgb(var(--shadow) / 0.24)',
       },
       backgroundImage: {
-        'brand-gradient': 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--gradient-end)))',
+        'brand-gradient': 'linear-gradient(135deg, rgb(var(--brand-start)), rgb(var(--gradient-end)))',
         'blush-gradient': 'linear-gradient(145deg, rgb(var(--blush-50)), rgb(var(--blush-100)) 55%, rgb(var(--champagne)))',
       },
       keyframes: {

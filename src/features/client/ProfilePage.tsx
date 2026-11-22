@@ -54,8 +54,8 @@ export function ProfilePage() {
       <div className="space-y-6">
         <Card>
           <CardHeader icon={<User className="h-5 w-5" />} title={t('profile.info')} />
-          <form onSubmit={saveInfo} className="grid gap-6 p-6 sm:grid-cols-2">
-            <Field label={t('auth.email')} hint={t('profile.emailHint')} className="sm:col-span-2">
+          <form onSubmit={saveInfo} className="divide-y divide-separator px-4 sm:px-6 [&>label]:py-4">
+            <Field label={t('auth.email')} hint={t('profile.emailHint')}>
               <div className="relative">
                 <Mail className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-label-secondary" />
                 <Input value={profile?.email ?? ''} disabled className="ps-11" />
@@ -67,8 +67,8 @@ export function ProfilePage() {
             <Field label={t('profile.phone')}>
               <Input type="tel" dir="ltr" {...info.register('phone')} />
             </Field>
-            <div className="flex flex-wrap items-center justify-between gap-4 sm:col-span-2">
-              <div className="flex items-center gap-3 text-sm text-label">
+            <div className="flex flex-wrap items-center justify-between gap-4 py-4">
+              <div className="flex flex-wrap items-center gap-3 text-subhead text-label">
                 {t('common.language')} <LanguageSwitcher />
               </div>
               <Button type="submit" loading={info.formState.isSubmitting}>
@@ -80,14 +80,14 @@ export function ProfilePage() {
 
         <Card>
           <CardHeader icon={<KeyRound className="h-5 w-5" />} title={t('profile.changePassword')} />
-          <form onSubmit={savePassword} className="grid gap-6 p-6 sm:grid-cols-2" noValidate>
+          <form onSubmit={savePassword} className="divide-y divide-separator px-4 sm:px-6 [&>label]:py-4" noValidate>
             <Field label={t('auth.newPassword')} error={pw.formState.errors.password?.message}>
               <Input type="password" autoComplete="new-password" {...pw.register('password')} />
             </Field>
             <Field label={t('auth.confirmPassword')} error={pw.formState.errors.confirm?.message}>
               <Input type="password" autoComplete="new-password" {...pw.register('confirm')} />
             </Field>
-            <div className="flex justify-end sm:col-span-2">
+            <div className="flex justify-end py-4">
               <Button type="submit" loading={pw.formState.isSubmitting}>
                 {t('auth.updatePassword')}
               </Button>

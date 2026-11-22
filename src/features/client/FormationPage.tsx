@@ -13,11 +13,11 @@ import {
   MessageCircle,
   PlayCircle,
 } from 'lucide-react';
-import { AnimatePresence, motion, useIsPresent, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { ease, spring } from '@/lib/motion';
+import { ease, spring, useReducedMotion } from '@/lib/motion';
 import { toast } from 'sonner';
-import { Badge, Button, EmptyState, Skeleton } from '@/components/ui';
+import { Badge, Button, buttonClassName, EmptyState, Skeleton } from '@/components/ui';
 import { LevelBadge, ProgressBar } from '@/components/Badges';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -142,7 +142,7 @@ export function FormationPage() {
   if (query.isLoading) {
     return (
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        <Skeleton className="aspect-video w-full" />
+        <motion.div layoutId={reducedMotion ? undefined : `formation-media-${slug}`} transition={spring}><Skeleton className="aspect-video w-full" /></motion.div>
         <Skeleton className="h-96 w-full" />
       </div>
     );
@@ -156,9 +156,7 @@ export function FormationPage() {
         icon={<BookOpen />}
         title={t('formation.notFound')}
         action={
-          <Link to="/catalog">
-            <Button variant="secondary">{t('nav.catalog')}</Button>
-          </Link>
+          <Link to="/catalog" className={buttonClassName('secondary')}>{t('nav.catalog')}</Link>
         }
       />
     );
@@ -195,7 +193,7 @@ export function FormationPage() {
         <div className="scrollbar-thin max-h-[70vh] overflow-y-auto">
           {groups.map((g, gi) => (
             <div key={g.id}>
-              <div className="sticky top-0 z-[1] bg-surface-tertiary px-6 py-3 text-footnote font-semibold text-label-secondary">
+              <div className="sticky top-0 z-[1] bg-card px-4 py-3 sm:px-6 text-footnote font-semibold text-label-secondary">
                 {gi + 1}. {g.title}
               </div>
               {g.items.map((item) => {
@@ -208,7 +206,7 @@ export function FormationPage() {
                     onClick={() => select(item.id)}
                     whileTap={item.playable && !reducedMotion ? { scale: 0.99 } : undefined}
                     className={cn(
-                      'focus-ring relative flex min-h-14 w-full items-center gap-3 border-b border-separator/40 px-6 py-4 text-start transition-colors',
+                      'focus-ring relative flex min-h-14 w-full items-center gap-3 border-b border-separator px-4 py-4 sm:px-6 text-start transition-colors',
                       !active && 'hover:bg-fill-secondary',
                       !item.playable && 'cursor-not-allowed',
                     )}
@@ -259,9 +257,9 @@ export function FormationPage() {
       </div>
 
       {!hasAccess && (
-        <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-separator bg-champagne p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-separator bg-card p-4 sm:p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-secondary text-rosegold">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
               <Lock className="h-5 w-5" />
             </span>
             <div>
@@ -269,14 +267,15 @@ export function FormationPage() {
               <div className="text-sm text-label-secondary">{t('formation.lockedText')}</div>
             </div>
           </div>
-          <a href={whatsappLink(t('catalog.waFormation', { name: formation.title, email: profile?.email ?? '' }))} target="_blank" rel="noreferrer">
-            <Button icon={<MessageCircle className="h-4 w-4" />}>{t('catalog.requestAccess')}</Button>
+          <a href={whatsappLink(t('catalog.waFormation', { name: formation.title, email: profile?.email ?? '' }))} target="_blank" rel="noreferrer" className={buttonClassName()}>
+            <MessageCircle className="h-4 w-4" /> {t('catalog.requestAccess')}
           </a>
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0 space-y-6">
+          <motion.div layoutId={reducedMotion ? undefined : `formation-media-${formation.slug}`} transition={spring}>
           {current ? (
             <AnimatePresence mode="wait" initial={true}>
               <motion.div
@@ -296,13 +295,15 @@ export function FormationPage() {
               </motion.div>
             </AnimatePresence>
           ) : (
-            <div className="flex aspect-video items-center justify-center overflow-hidden rounded-2xl bg-blush-gradient">
+            <div className="flex aspect-video items-center justify-center overflow-hidden rounded-2xl bg-card px-4">
               <div className="text-center">
                 <Lock className="mx-auto h-10 w-10 text-rosegold" />
                 <p className="mt-3 text-sm text-label-secondary">{flat.length ? t('formation.lockedText') : t('formation.noVideos')}</p>
               </div>
             </div>
           )}
+
+          </motion.div>
 
           {current && (
             <div className="card overflow-hidden p-6">
@@ -345,25 +346,27 @@ export function FormationPage() {
           )}
 
           <div className="card overflow-hidden">
-            <div className="flex border-b border-separator/60">
+            <div className="glass m-2 flex rounded-xl p-1 lg:hidden">
               {(['description', 'content'] as const).map((k) => (
                 <button
                   key={k}
+                  aria-pressed={tab === k}
                   onClick={() => setTab(k)}
                   className={cn(
-                    'focus-ring relative min-h-12 flex-1 px-6 py-3 text-subhead font-semibold transition-colors',
+                    'focus-ring relative min-h-11 flex-1 rounded-lg px-2 py-2 text-subhead font-semibold transition-colors',
                     k === 'content' && 'lg:hidden',
                     tab === k ? 'text-accent' : 'text-label-secondary hover:text-label',
                   )}
                 >
-                  {t(`formation.${k}`)}
                   {tab === k && (
-                    <motion.span layoutId={reducedMotion ? undefined : "formation-tab-underline"} className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-gradient" transition={reducedMotion ? { duration: 0 } : spring} />
+                    <motion.span layoutId={reducedMotion ? undefined : "formation-segment"} className="absolute inset-0 rounded-lg bg-card shadow-soft" transition={reducedMotion ? { duration: 0 } : spring} />
                   )}
+                  <span className="relative">{t(`formation.${k}`)}</span>
                 </button>
               ))}
             </div>
-            <div className={cn('space-y-4 whitespace-pre-line p-6 text-sm leading-relaxed text-label', tab !== 'description' && 'hidden lg:block')}>
+            <h2 className="hidden px-6 pt-6 text-headline lg:block">{t('formation.description')}</h2>
+            <div className={cn('space-y-4 whitespace-pre-line p-4 text-subhead sm:p-6 leading-relaxed text-label', tab !== 'description' && 'hidden lg:block')}>
               {current?.description && <p>{current.description}</p>}
               {formation.description ? <p>{formation.description}</p> : !current?.description && <p className="text-label-secondary">{t('formation.noDescription')}</p>}
             </div>

@@ -1,9 +1,10 @@
 import { createContext, forwardRef, useContext, useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const FieldContext = createContext<{ descriptionId?: string; invalid?: boolean }>({});
 const base =
-  'w-full min-w-0 rounded-xl border border-control-border bg-surface-tertiary/60 px-4 text-callout text-label placeholder:text-label-tertiary transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50';
+  'w-full min-w-0 rounded-xl border border-control-border bg-fill-quaternary px-4 text-callout text-label placeholder:text-label-tertiary aria-invalid:border-danger aria-invalid:focus:ring-danger transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }>(
   function Input({ className, invalid, ...rest }, ref) {
@@ -26,9 +27,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
 ) {
   const field = useContext(FieldContext);
   return (
-    <select ref={ref} aria-invalid={field.invalid || undefined} aria-describedby={field.descriptionId} className={cn(base, 'min-h-12 appearance-auto py-3 pe-8', className)} {...rest}>
-      {children}
-    </select>
+    <span className="relative block">
+      <select ref={ref} aria-invalid={field.invalid || undefined} aria-describedby={field.descriptionId} className={cn(base, 'min-h-12 py-3', !rest.multiple && !rest.size && 'appearance-none pe-11', className)} {...rest}>
+        {children}
+      </select>
+      {!rest.multiple && !rest.size && <ChevronsUpDown aria-hidden="true" className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-label-secondary" />}
+    </span>
   );
 });
 
@@ -75,19 +79,19 @@ export function Switch({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="focus-ring group inline-flex min-h-11 items-center gap-3 rounded-xl text-start disabled:opacity-50"
+      className="focus-ring press-feedback inline-flex min-h-11 items-center gap-3 rounded-xl text-start disabled:opacity-50"
     >
       <span
         aria-hidden="true"
         className={cn(
-          'relative inline-flex h-8 w-[52px] shrink-0 items-center rounded-full border transition-colors duration-150',
-          checked ? 'border-accent bg-accent' : 'border-control-border bg-fill',
+          'relative inline-flex h-8 w-[52px] shrink-0 items-center rounded-full border shadow-[inset_0_1px_2px_rgb(0_0_0/0.07)] transition-colors duration-150',
+          checked ? 'border-transparent bg-success' : 'border-control-border bg-fill',
         )}
       >
         <span
           className={cn(
-            'absolute h-[26px] w-[26px] rounded-full bg-surface-secondary shadow-soft transition-[inset-inline-start] duration-200',
-            checked ? 'start-[22px]' : 'start-0.5',
+            'absolute start-0.5 h-[26px] w-[26px] rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.28)] transition-transform duration-200 ease-out',
+            checked ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-0',
           )}
         />
       </span>

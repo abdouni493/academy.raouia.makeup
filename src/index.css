@@ -5,89 +5,150 @@
 @layer base {
   :root {
     color-scheme: light;
-    --background: 252 247 244;
-    --background-secondary: 255 251 248;
-    --background-tertiary: 244 232 231;
-    --label: 49 33 45;
-    --label-secondary: 108 82 95;
-    --label-tertiary: 116 92 103;
-    --label-quaternary: 120 96 107;
-    --separator: 221 199 206;
-    --control-border: 151 117 131;
-    --fill: 234 214 221;
-    --fill-secondary: 242 229 232;
-    --accent: 165 47 88;
-    --accent-pressed: 136 35 68;
-    --accent-soft: 247 225 233;
+    /* RGB channels keep the iOS palette usable with Tailwind opacity modifiers. */
+    --system-blue: 0 122 255;
+    --system-green: 52 199 89;
+    --system-indigo: 88 86 214;
+    --system-orange: 255 149 0;
+    --system-pink: 255 45 85;
+    --system-purple: 175 82 222;
+    --system-red: 255 59 48;
+    --system-teal: 48 176 199;
+    --system-yellow: 255 204 0;
+    --system-mint: 0 199 190;
+    --system-cyan: 50 173 230;
+    --system-brown: 162 132 94;
+    --system-gray: 142 142 147;
+    --system-gray-2: 174 174 178;
+    --system-gray-3: 199 199 204;
+    --system-gray-4: 209 209 214;
+    --system-gray-5: 229 229 234;
+    --system-gray-6: 242 242 247;
+    --background: 255 255 255;
+    --background-secondary: var(--system-gray-6);
+    --background-tertiary: 255 255 255;
+    --grouped: var(--system-gray-6);
+    --card: var(--background);
+    --label: 0 0 0;
+    --label-rgb: 60 60 67;
+    --label-secondary: rgb(var(--label-rgb) / 60%);
+    --label-tertiary: rgb(var(--label-rgb) / 30%);
+    --label-quaternary: rgb(var(--label-rgb) / 18%);
+    --separator: 60 60 67;
+    --separator-alpha: .29;
+    --opaque-separator: 198 198 200;
+    --fill: 120 120 128;
+    --fill-secondary: 120 120 128;
+    --fill-tertiary: 118 118 128;
+    --fill-quaternary: 116 116 128;
+    --fill-alpha: .20;
+    --fill-secondary-alpha: .16;
+    --fill-tertiary-alpha: .12;
+    --fill-quaternary-alpha: .08;
+
+    /* Set the interaction tint here. Ink and glass derive from the same swatch. */
+    --accent: var(--system-pink);
+    --success: var(--system-green);
+    --danger: var(--system-red);
+    --warning: var(--system-orange);
+    --info: var(--system-blue);
+    --ink-mix: 52%;
+    --ink-base: black;
+    --soft-mix: 10%;
+    --accent-ink: color-mix(in srgb, rgb(var(--accent)) var(--ink-mix), var(--ink-base));
+    --accent-pressed-ink: color-mix(in srgb, var(--accent-ink) 86%, var(--ink-base));
+    --accent-pressed: color-mix(in srgb, rgb(var(--accent)) 66%, black);
+    --accent-soft: color-mix(in srgb, rgb(var(--accent)) var(--soft-mix), rgb(var(--card)));
     --accent-contrast: 255 255 255;
+    --success-ink: color-mix(in srgb, rgb(var(--success)) var(--ink-mix), var(--ink-base));
+    --danger-ink: color-mix(in srgb, rgb(var(--danger)) var(--ink-mix), var(--ink-base));
+    --warning-ink: color-mix(in srgb, rgb(var(--warning)) var(--ink-mix), var(--ink-base));
+    --info-ink: color-mix(in srgb, rgb(var(--info)) var(--ink-mix), var(--ink-base));
+    --success-soft: color-mix(in srgb, rgb(var(--success)) var(--soft-mix), rgb(var(--card)));
+    --danger-soft: color-mix(in srgb, rgb(var(--danger)) var(--soft-mix), rgb(var(--card)));
+    --warning-soft: color-mix(in srgb, rgb(var(--warning)) var(--soft-mix), rgb(var(--card)));
+    --info-soft: color-mix(in srgb, rgb(var(--info)) var(--soft-mix), rgb(var(--card)));
+
+    /* Raw low-emphasis labels are too translucent for small text on glass.
+       Text utilities use these solid, contrast-tested semantic inks. */
+    --secondary-ink: 68 68 76;
+    --tertiary-ink: 76 76 84;
+    --control-border: 112 112 121;
+    --surface-inverse: 16 16 18;
+    --material: var(--card);
+    --sidebar: var(--card);
+    --sidebar-label: var(--label);
+    --sidebar-secondary: var(--secondary-ink);
+    --sidebar-fill: var(--system-gray-5);
+    --scrim: 0 0 0;
+    --shadow: 27 27 32;
+    --glass-keyline: rgb(0 0 0 / .11);
+    --glass-highlight: rgb(255 255 255 / .76);
+    --glass-sheen: rgb(255 255 255 / .07);
+    --glass-accent-base: color-mix(in srgb, rgb(var(--accent)) 69%, black);
+
+    /* Signature colors are reserved for the academy identity and artwork. */
+    --brand-start: 161 40 78;
     --gradient-end: 143 72 88;
-    --rosegold: 144 82 70;
+    --rosegold: 119 66 56;
     --rosegold-light: 231 201 188;
     --champagne: 245 229 207;
     --nude: 234 216 206;
-    --surface-inverse: 40 26 38;
-    --material: 255 251 248;
-    --sidebar: 56 35 49;
-    --sidebar-label: 255 245 248;
-    --sidebar-secondary: 225 197 209;
-    --sidebar-fill: 85 59 77;
-    --scrim: 33 19 30;
-    --shadow: 54 32 44;
-    --success: 40 99 68;
-    --success-soft: 228 240 231;
-    --danger: 178 47 70;
-    --danger-soft: 251 232 235;
-    --warning: 133 86 23;
-    --warning-soft: 245 234 207;
-    --info: 49 94 144;
-    --info-soft: 230 237 246;
     --blush-50: 252 242 244;
     --blush-100: 247 225 233;
     --blush-200: 238 198 212;
     --blush-300: 219 162 181;
-    --blush-400: 178 77 112;
-    --blush-500: 165 47 88;
-    --blush-600: 156 44 82;
-    --blush-700: 141 36 73;
+    --blush-400: 157 56 91;
+    --blush-500: 151 42 80;
+    --blush-600: 141 36 73;
+    --blush-700: 122 28 59;
   }
   :root.dark {
     color-scheme: dark;
-    --background: 28 22 29;
-    --background-secondary: 41 33 43;
-    --background-tertiary: 56 45 56;
-    --label: 249 238 243;
-    --label-secondary: 217 192 205;
-    --label-tertiary: 206 181 194;
-    --label-quaternary: 199 174 187;
-    --separator: 89 67 81;
-    --control-border: 163 132 150;
-    --fill: 91 60 78;
-    --fill-secondary: 68 50 62;
-    --accent: 245 162 188;
-    --accent-pressed: 248 189 208;
-    --accent-soft: 75 45 62;
-    --accent-contrast: 50 24 35;
-    --gradient-end: 232 182 162;
-    --rosegold: 228 177 158;
+    --system-blue: 10 132 255;
+    --system-green: 48 209 88;
+    --system-indigo: 94 92 230;
+    --system-orange: 255 159 10;
+    --system-pink: 255 55 95;
+    --system-purple: 191 90 242;
+    --system-red: 255 69 58;
+    --system-teal: 64 200 224;
+    --system-yellow: 255 214 10;
+    --system-mint: 99 230 226;
+    --system-cyan: 100 210 255;
+    --system-brown: 172 142 104;
+    --system-gray-2: 99 99 102;
+    --system-gray-3: 72 72 74;
+    --system-gray-4: 58 58 60;
+    --system-gray-5: 44 44 46;
+    --system-gray-6: 28 28 30;
+    --background: 0 0 0;
+    --background-tertiary: var(--system-gray-5);
+    --grouped: var(--background);
+    --card: var(--background-secondary);
+    --label: 255 255 255;
+    --label-rgb: 235 235 245;
+    --separator: 84 84 88;
+    --separator-alpha: .65;
+    --opaque-separator: 56 56 58;
+    --fill-alpha: .36;
+    --fill-secondary-alpha: .32;
+    --fill-tertiary-alpha: .24;
+    --fill-quaternary-alpha: .18;
+    --ink-mix: 47%;
+    --ink-base: white;
+    --soft-mix: 14%;
+    --secondary-ink: 224 224 232;
+    --tertiary-ink: 210 210 218;
+    --control-border: 148 148 156;
+    --shadow: 0 0 0;
+    --glass-keyline: rgb(255 255 255 / .16);
+    --glass-highlight: rgb(255 255 255 / .16);
+    --glass-sheen: rgb(255 255 255 / .035);
+    --rosegold: 244 196 176;
     --rosegold-light: 101 70 63;
     --champagne: 60 48 48;
     --nude: 81 61 59;
-    --surface-inverse: 23 18 25;
-    --material: 48 38 49;
-    --sidebar: 36 27 39;
-    --sidebar-label: 255 240 246;
-    --sidebar-secondary: 219 192 208;
-    --sidebar-fill: 73 53 72;
-    --scrim: 16 11 17;
-    --shadow: 8 5 10;
-    --success: 155 213 177;
-    --success-soft: 37 60 48;
-    --danger: 255 172 185;
-    --danger-soft: 73 42 53;
-    --warning: 233 195 140;
-    --warning-soft: 67 56 42;
-    --info: 176 207 244;
-    --info-soft: 41 57 76;
     --blush-50: 48 35 45;
     --blush-100: 75 45 62;
     --blush-200: 101 64 81;
@@ -98,7 +159,7 @@
     --blush-700: 255 193 213;
   }
   html { -webkit-tap-highlight-color: transparent; scroll-padding-block: 5rem; }
-  body { @apply bg-surface font-sans text-body text-label antialiased; min-height: 100dvh; }
+  body { @apply bg-grouped font-sans text-body text-label antialiased; min-height: 100dvh; }
   html.lang-ar body, html.lang-ar .font-sans, html.lang-ar .font-display, html.lang-ar .font-brand {
     font-family: Cairo, sans-serif;
     letter-spacing: normal;
@@ -109,19 +170,67 @@
   button, a, input, select, textarea, [tabindex] { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface; }
   ::selection { @apply bg-accent-soft text-label; }
   input[type='date']::-webkit-calendar-picker-indicator { opacity: 0.8; }
-  .lucide { stroke-width: 1.65; }
+  .lucide { stroke-width: 1.6; }
 }
 
 @layer components {
-  .card { @apply rounded-2xl border border-separator/60 bg-surface-secondary shadow-soft; }
+  .card, .grouped-list { @apply rounded-2xl bg-card shadow-soft; }
+  .grouped-list { @apply divide-y divide-separator; }
   .focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface; }
   .text-gradient { @apply bg-brand-gradient bg-clip-text text-transparent; }
-  .material { @apply bg-material/95 backdrop-blur-xl; }
-  .sidebar-material { @apply bg-sidebar/95 text-sidebar-label backdrop-blur-xl; }
-  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: rgb(var(--separator)) transparent; }
-  .press-feedback { transition: background-color 150ms, color 150ms, opacity 150ms, transform 150ms cubic-bezier(.2,.8,.2,1); }
-  .press-feedback:active:not(:disabled) { transform: scale(.98); }
-  [data-sonner-toast] { --normal-bg: rgb(var(--background-secondary)); --normal-text: rgb(var(--label)); --normal-border: rgb(var(--separator)); font-family: inherit; }
+
+  /* Opaque by default. Each material owns one backdrop and one static glint. */
+  :is(.glass, .glass-accent, .glass-ultrathin, .glass-thin, .glass-regular,
+      .material, .material-bar, .material-sheet, .material-sidebar, .sidebar-material) {
+    --glass-base: rgb(var(--material));
+    --glass-opacity: 91%;
+    --glass-blur: 16px;
+    background-color: var(--glass-base);
+    background-image: linear-gradient(155deg, var(--glass-sheen), transparent 42%);
+    @apply shadow-glass;
+  }
+  .glass {
+    --glass-base: color-mix(in srgb, rgb(var(--fill)) 11%, rgb(var(--card)));
+    --glass-blur: 8px;
+  }
+  .glass-accent {
+    --glass-base: var(--glass-accent-base);
+    --glass-opacity: 95%;
+    --glass-blur: 8px;
+    color: rgb(var(--accent-contrast));
+  }
+  .glass-ultrathin { --glass-opacity: 83%; --glass-blur: 12px; }
+  .glass-thin, .material-bar { --glass-opacity: 87%; --glass-blur: 14px; }
+  .glass-regular, .material-sheet, .material-sidebar, .sidebar-material { --glass-opacity: 95%; }
+  .material-sidebar, .sidebar-material { color: rgb(var(--sidebar-label)); }
+
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :is(.glass, .glass-accent, .glass-ultrathin, .glass-thin, .glass-regular,
+        .material, .material-bar, .material-sheet, .material-sidebar, .sidebar-material) {
+      background-color: color-mix(in srgb, var(--glass-base) var(--glass-opacity), transparent);
+      /* autoprefixer: ignore next */
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+      backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    }
+    /* Inside a material or an opaque content card the parent provides the backdrop. */
+    :is(.card, .grouped-list, .glass, .glass-ultrathin, .glass-thin, .glass-regular,
+        .material, .material-bar, .material-sheet, .material-sidebar, .sidebar-material) :is(.glass, .glass-accent) {
+      background-color: var(--glass-base);
+      /* autoprefixer: ignore next */
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: rgb(var(--control-border)) transparent; }
+  :where(button, a[href], [role='button']), .press-feedback {
+    transition: background-color 140ms, color 140ms, scale 140ms cubic-bezier(.2,.8,.2,1);
+  }
+  :where(button, a[href], [role='button']):active:not(:disabled), .press-feedback:active:not(:disabled) {
+    scale: .96;
+  }
+  .glass-accent:active:not(:disabled) { filter: brightness(1.05); }
+  [data-sonner-toast] { --normal-bg: rgb(var(--card)); --normal-text: rgb(var(--label)); --normal-border: rgb(var(--opaque-separator)); font-family: inherit; }
 }
 
 @layer utilities {
@@ -129,17 +238,21 @@
   [dir='rtl'] .rtl-flip { transform: scaleX(-1); }
 }
 
-@media (prefers-reduced-transparency: reduce) {
-  .material { background: rgb(var(--material)); backdrop-filter: none; }
-  .sidebar-material { background: rgb(var(--sidebar)); backdrop-filter: none; }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :is(.glass, .glass-accent, .glass-ultrathin, .glass-thin, .glass-regular,
+      .material, .material-bar, .material-sheet, .material-sidebar, .sidebar-material) {
+    background-color: var(--glass-base);
+    background-image: none;
+    /* autoprefixer: ignore next */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 @media (prefers-contrast: more) {
-  :root { --separator: 130 98 113; --label-secondary: 73 48 61; --label-tertiary: 73 48 61; --label-quaternary: 73 48 61; }
-  :root.dark { --separator: 183 151 169; --label-secondary: 249 238 243; --label-tertiary: 249 238 243; --label-quaternary: 249 238 243; }
-  .material, .sidebar-material { backdrop-filter: none; }
+  :root, :root.dark { --separator-alpha: 1; --separator: var(--control-border); --secondary-ink: var(--label); --tertiary-ink: var(--label); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .press-feedback:active:not(:disabled) { transform: none; }
+  :where(button, a[href], [role='button']):active:not(:disabled), .press-feedback:active:not(:disabled) { scale: none; }
   /* The anti-piracy watermark remains animated by explicit product requirement. */
   *:not(.animate-watermark), *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }

@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, PlayCircle, Sparkles } from 'lucide-react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { BookOpen, PlayCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { StaggerGroup, StaggerItem } from '@/components/Motion';
-import { ease } from '@/lib/motion';
-import { Button, CardGridSkeleton, EmptyState, Skeleton } from '@/components/ui';
+import { LoadingTransition, StaggerGroup, StaggerItem } from '@/components/Motion';
+import { ease, useReducedMotion } from '@/lib/motion';
+import { Button, buttonClassName, CardGridSkeleton, EmptyState, Skeleton } from '@/components/ui';
 import { CoverImage } from '@/components/CoverImage';
 import { ProgressBar } from '@/components/Badges';
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -44,9 +44,6 @@ export function DashboardPage() {
         className="relative overflow-hidden rounded-3xl border border-separator/60 bg-blush-gradient p-6 sm:p-10"
       >
         <div className="relative max-w-2xl">
-          <div className="mb-4 inline-flex items-center gap-2 text-footnote font-semibold text-rosegold">
-            <Sparkles className="h-3.5 w-3.5" /> {t('nav.dashboard')}
-          </div>
           <h1 className="text-large-title">{t('client.hello', { name: firstName })}</h1>
           <p className="mt-2 text-label-secondary">{t('client.welcome')}</p>
         </div>
@@ -63,7 +60,7 @@ export function DashboardPage() {
                 <StaggerItem key={p.video_id}>
                 <Link
                   to={`/formation/${v.formations!.slug}?v=${v.id}`}
-                  className="card group block overflow-hidden transition-shadow hover:shadow-elevated"
+                  className="card focus-ring group block overflow-hidden transition-shadow hover:shadow-elevated"
                 >
                   <div className="relative aspect-video overflow-hidden">
                     <CoverImage src={v.thumbnail_url || v.formations!.cover_url} alt={v.title} seed={v.id} />
@@ -91,37 +88,35 @@ export function DashboardPage() {
       <section>
         <div className="mb-6 flex items-end justify-between gap-4">
           <h2 className="text-title-2">{t('client.myFormations')}</h2>
-          <Link to="/catalog" className="inline-flex min-h-11 items-center text-subhead font-semibold text-accent hover:text-accent-pressed">
+          <Link to="/catalog" className="focus-ring inline-flex min-h-11 items-center rounded-lg text-subhead font-semibold text-accent hover:text-accent-pressed">
             {t('nav.catalog')} <span className="ms-2 inline-block rtl-flip" aria-hidden>→</span>
           </Link>
         </div>
-        {catalog.isLoading ? (
-          <CardGridSkeleton count={3} />
-        ) : catalog.isError ? (
-          <EmptyState icon={<BookOpen />} title={t('common.error')} action={<Button onClick={() => void catalog.refetch()}>{t('common.retry')}</Button>} />
-        ) : mine.length === 0 ? (
-          <EmptyState
-            icon={<BookOpen />}
-            title={t('client.noFormations')}
-            text={t('client.noFormationsText')}
-            action={
-              <Link to="/catalog">
-                <Button>{t('client.exploreCatalog')}</Button>
-              </Link>
-            }
-          />
-        ) : (
-          <StaggerGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {mine.map((f) => (
-              <StaggerItem key={f.id}>
-                <FormationCard
-                  entry={f}
-                  progress={f.video_count ? Math.min(100, Math.round(((completedByFormation[f.id] ?? 0) / f.video_count) * 100)) : 0}
-                />
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
-        )}
+        <LoadingTransition loading={catalog.isLoading} fallback={<CardGridSkeleton count={3} />}>
+          {catalog.isError ? (
+            <EmptyState icon={<BookOpen />} title={t('common.error')} action={<Button onClick={() => void catalog.refetch()}>{t('common.retry')}</Button>} />
+          ) : mine.length === 0 ? (
+            <EmptyState
+              icon={<BookOpen />}
+              title={t('client.noFormations')}
+              text={t('client.noFormationsText')}
+              action={
+                <Link to="/catalog" className={buttonClassName()}>{t('client.exploreCatalog')}</Link>
+              }
+            />
+          ) : (
+            <StaggerGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {mine.map((f) => (
+                <StaggerItem key={f.id}>
+                  <FormationCard
+                    entry={f}
+                    progress={f.video_count ? Math.min(100, Math.round(((completedByFormation[f.id] ?? 0) / f.video_count) * 100)) : 0}
+                  />
+                </StaggerItem>
+              ))}
+            </StaggerGroup>
+          )}
+        </LoadingTransition>
       </section>
     </div>
   );

@@ -71,24 +71,24 @@ export function SectionsManager({ formationId, sections }: { formationId: string
         <SortableList
           items={sections}
           onReorder={(n) => void reorder(n)}
-          className="space-y-2"
+          className="grouped-list px-2"
           renderItem={(s, handle, index) => (
-            <div className="flex items-center gap-2 rounded-xl border border-separator/60 bg-surface-secondary px-2 py-2">
+            <div className="flex flex-wrap items-center gap-1 py-2">
               {handle}
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-xs font-semibold text-accent">{index + 1}</span>
               {editingId === s.id ? (
                 <form
-                  className="flex flex-1 items-center gap-1"
+                  className="flex min-w-0 basis-full items-center gap-1 sm:basis-24 sm:flex-1"
                   onSubmit={(e) => {
                     e.preventDefault();
                     void rename(s.id);
                   }}
                 >
                   <Input autoFocus className="min-h-11" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
-                  <Button type="submit" size="icon" variant="subtle">
+                  <Button type="submit" size="icon" variant="subtle" title={t('common.save')}>
                     <Check className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="ghost" onClick={() => setEditingId(null)}>
+                  <Button size="icon" variant="ghost" title={t('common.cancel')} onClick={() => setEditingId(null)}>
                     <X className="h-4 w-4" />
                   </Button>
                 </form>
@@ -119,7 +119,7 @@ export function SectionsManager({ formationId, sections }: { formationId: string
         />
       )}
       <form onSubmit={add} className="flex gap-2">
-        <Input placeholder={t('sections.newTitle')} value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+        <Input aria-label={t('sections.newTitle')} placeholder={t('sections.newTitle')} value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
         <Button type="submit" variant="secondary" loading={adding} icon={<Plus className="h-4 w-4" />} title={t('sections.add')} aria-label={t('sections.add')} />
       </form>
       <ConfirmDialog

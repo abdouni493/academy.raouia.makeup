@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, Eye, FolderOpen, Gift, Layers, Pencil, RefreshCw, Trash2, UploadCloud, Video as VideoIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge, Button, Card, CardHeader, ConfirmDialog, EmptyState, Modal, PageLoader, Switch } from '@/components/ui';
+import { Badge, Button, buttonClassName, Card, CardHeader, ConfirmDialog, EmptyState, Modal, PageLoader, Switch } from '@/components/ui';
 import { CoverImage } from '@/components/CoverImage';
 import { LevelBadge, StatusBadge } from '@/components/Badges';
 import { SortableList } from '@/components/SortableList';
@@ -127,24 +127,26 @@ export function FormationEditorPage() {
 
   if (formationQ.isLoading) return <PageLoader />;
   const formation = formationQ.data;
-  if (!formation) return <EmptyState icon={<VideoIcon />} title={t('formation.notFound')} action={<Link to="/admin/formations"><Button variant="secondary">{t('common.back')}</Button></Link>} />;
+  if (!formation) return <EmptyState icon={<VideoIcon />} title={t('formation.notFound')} action={<Link to="/admin/formations" className={buttonClassName('secondary', 'md')}>
+              {t('common.back')}
+            </Link>} />;
 
   const totalSeconds = videos.reduce((s, v) => s + (v.duration_seconds ?? 0), 0);
 
   return (
     <div className="space-y-6">
-      <Link to="/admin/formations" className="inline-flex items-center gap-1 text-sm text-label-secondary hover:text-label">
+      <Link to="/admin/formations" className="focus-ring inline-flex min-h-11 items-center gap-1 rounded-lg text-subhead text-accent hover:underline">
         <ChevronLeft className="rtl-flip h-4 w-4" /> {t('formations.title')}
       </Link>
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:p-6">
           <div className="group aspect-video w-full shrink-0 overflow-hidden rounded-xl sm:w-48">
             <CoverImage src={formation.cover_url} alt={formation.title} seed={formation.id} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-title-2 sm:text-3xl">{formation.title}</h1>
+              <h1 className="break-words text-title-1 sm:text-large-title">{formation.title}</h1>
               <LevelBadge level={formation.level} />
             </div>
             {formation.short_description && <p className="mt-1 text-sm text-label-secondary">{formation.short_description}</p>}
@@ -153,17 +155,15 @@ export function FormationEditorPage() {
                 {t('formations.videosCount', { count: videos.length })}
               </Badge>
               <Badge tone="gray">{formatDuration(totalSeconds)}</Badge>
-              <span dir="ltr">/formation/{formation.slug}</span>
+              <span dir="ltr" className="break-all">/formation/{formation.slug}</span>
             </div>
           </div>
           <div className="flex flex-col items-start gap-3 sm:items-end">
             <Switch checked={formation.is_published} onChange={(v) => void togglePublish(v)} label={formation.is_published ? t('common.published') : t('common.draft')} />
-            <div className="flex gap-2">
-              <Link to={`/formation/${formation.slug}`}>
-                <Button size="sm" variant="ghost" icon={<Eye className="h-4 w-4" />}>
-                  {t('common.view')}
-                </Button>
-              </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link to={`/formation/${formation.slug}`} className={buttonClassName('ghost', 'sm')}>
+              <Eye className="h-4 w-4" /> {t('common.view')}
+            </Link>
               <Button size="sm" variant="secondary" icon={<Pencil className="h-4 w-4" />} onClick={() => setEditInfo(true)}>
                 {t('formations.details')}
               </Button>
@@ -176,13 +176,13 @@ export function FormationEditorPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader icon={<Layers className="h-5 w-5" />} title={t('sections.title')} />
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <SectionsManager formationId={id} sections={sections} />
             </div>
           </Card>
           <Card>
             <CardHeader icon={<UploadCloud className="h-5 w-5" />} title={t('videos.upload')} />
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <UploadZone formationId={id} sections={sections} />
             </div>
           </Card>
@@ -190,7 +190,7 @@ export function FormationEditorPage() {
 
         <Card>
           <CardHeader icon={<VideoIcon className="h-5 w-5" />} title={t('videos.title')} subtitle={videos.length ? t('common.dragToReorder') : undefined} />
-          <div className="space-y-6 p-6">
+          <div className="space-y-6 p-4 sm:p-6">
             {videosQ.isLoading ? (
               <PageLoader />
             ) : videos.length === 0 ? (
@@ -200,7 +200,7 @@ export function FormationEditorPage() {
                 .filter((g) => g.items.length > 0 || g.id !== '__none')
                 .map((g) => (
                   <div key={g.id}>
-                    <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-rosegold">
+                    <div className="mb-2 flex items-center gap-2 text-subhead font-semibold text-label-secondary">
                       <FolderOpen className="h-4 w-4" /> {g.title}
                       <span className="text-label-secondary">({g.items.length})</span>
                     </div>
@@ -210,9 +210,9 @@ export function FormationEditorPage() {
                       <SortableList
                         items={g.items}
                         onReorder={(n) => void reorderGroup(g.id, n)}
-                        className="space-y-2"
+                        className="grouped-list px-2"
                         renderItem={(v, handle) => (
-                          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-separator/60 bg-surface-secondary p-2 sm:flex-nowrap">
+                          <div className="flex flex-wrap items-center gap-2 py-2 2xl:flex-nowrap">
                             {handle}
                             <div className="group relative h-12 w-20 shrink-0 overflow-hidden rounded-lg bg-surface-tertiary">
                               <CoverImage src={v.thumbnail_url} alt={v.title} seed={v.id} />
@@ -243,7 +243,7 @@ export function FormationEditorPage() {
                                 <Gift className="h-4 w-4" />
                               </Button>
                               <Button size="icon" variant="ghost" title={t('videos.refresh')} onClick={() => void refresh(v)}>
-                                <RefreshCw className={`h-4 w-4 ${refreshing === v.id ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`h-4 w-4 ${refreshing === v.id ? 'motion-safe:animate-spin' : ''}`} />
                               </Button>
                               <Button size="icon" variant="ghost" title={t('common.edit')} onClick={() => setEditVideo(v)}>
                                 <Pencil className="h-4 w-4" />

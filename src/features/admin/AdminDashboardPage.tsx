@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { CheckCircle2, Clock, Crown, Sparkles, UserCheck, Users, Video, Gem } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Clock, Crown, UserCheck, Users, Video, Gem } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { StaggerGroup, StaggerItem } from '@/components/Motion';
 import { Badge, Card, CardHeader, Skeleton } from '@/components/ui';
@@ -58,17 +58,17 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader eyebrow={<><Sparkles className="me-1 inline h-3.5 w-3.5" /> Admin</>} title={t('admin.dashboardTitle')} subtitle={t('admin.dashboardSubtitle')} />
+      <PageHeader title={t('admin.dashboardTitle')} subtitle={t('admin.dashboardSubtitle')} />
 
       <StaggerGroup className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-        {cards.map((c, i) => (
-          <StaggerItem key={c.label}>
+        {cards.map((c) => (
+          <StaggerItem key={c.label} hover={false}>
           <div className="card h-full p-4 sm:p-6">
-            <span className={`relative mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${i % 2 ? 'bg-champagne text-rosegold' : 'bg-accent-soft text-accent'}`}>
+            <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent">
               <c.icon className="h-5 w-5" />
             </span>
             {stats.isLoading ? <Skeleton className="h-8 w-16" /> : <div className="font-sans text-title-1 tabular-nums text-label">{c.value ?? 0}</div>}
-            <div className="relative mt-1 text-xs text-label-secondary">{c.label}</div>
+            <div className="relative mt-1 text-footnote text-label-secondary">{c.label}</div>
           </div>
           </StaggerItem>
         ))}
@@ -76,20 +76,20 @@ export function AdminDashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader icon={<Users className="h-5 w-5" />} title={t('admin.recentClients')} action={<Link to="/admin/clients" aria-label={t('clients.title')} className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full text-accent hover:bg-accent-soft"><span className="rtl-flip">→</span></Link>} />
-          <div className="divide-y divide-separator/60">
+          <CardHeader icon={<Users className="h-5 w-5" />} title={t('admin.recentClients')} action={<Link to="/admin/clients" aria-label={t('clients.title')} className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full text-accent hover:bg-accent-soft"><ChevronRight aria-hidden="true" className="rtl-flip h-5 w-5" /></Link>} />
+          <div className="divide-y divide-separator px-4 sm:px-6">
             {recent.isLoading && <Skeleton className="m-6 h-24" />}
             {recent.data?.length === 0 && <p className="p-6 text-center text-sm text-label-secondary">{t('clients.empty')}</p>}
             {recent.data?.map((c) => (
-              <Link key={c.id} to={`/admin/clients/${c.id}`} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-fill-secondary">
+              <Link key={c.id} to={`/admin/clients/${c.id}`} className="flex min-h-14 items-center gap-3 py-4 transition-colors hover:bg-fill-secondary">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent">
                   {(c.full_name || c.email || '?').slice(0, 1).toUpperCase()}
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium text-label">{c.full_name || '—'}</div>
-                  <div className="truncate text-xs text-label-secondary">{c.email}</div>
+                  <div className="truncate text-footnote text-label-secondary">{c.email}</div>
                 </div>
-                <span className="text-xs text-label-secondary">{formatDate(c.created_at, locale)}</span>
+                <span className="text-footnote text-label-secondary">{formatDate(c.created_at, locale)}</span>
                 {!c.is_active && <Badge tone="red">{t('clients.suspended')}</Badge>}
               </Link>
             ))}
@@ -98,7 +98,7 @@ export function AdminDashboardPage() {
 
         <Card>
           <CardHeader icon={<Video className="h-5 w-5" />} title={t('admin.videosAttention')} />
-          <div className="divide-y divide-separator/60">
+          <div className="divide-y divide-separator px-4 sm:px-6">
             {attention.isLoading && <Skeleton className="m-6 h-24" />}
             {attention.data?.length === 0 && (
               <p className="flex items-center justify-center gap-2 p-6 text-center text-sm text-label-secondary">
@@ -106,10 +106,10 @@ export function AdminDashboardPage() {
               </p>
             )}
             {attention.data?.map((v) => (
-              <Link key={v.id} to={`/admin/formations/${v.formation_id}`} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-fill-secondary">
+              <Link key={v.id} to={`/admin/formations/${v.formation_id}`} className="flex min-h-14 items-center gap-3 py-4 transition-colors hover:bg-fill-secondary">
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium text-label">{v.title}</div>
-                  <div className="truncate text-xs text-label-secondary">{v.formations?.title}</div>
+                  <div className="truncate text-footnote text-label-secondary">{v.formations?.title}</div>
                 </div>
                 <StatusBadge status={v.status} />
               </Link>

@@ -11,7 +11,7 @@ export function UploadRow({ item }: { item: UploadItem }) {
   const running = item.state === 'queued' || item.state === 'preparing' || item.state === 'uploading';
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-separator/60 bg-surface-secondary p-3">
+    <div className="flex items-center gap-3 rounded-xl bg-fill-tertiary p-3">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-tertiary text-accent">
         {item.state === 'done' ? (
           <CheckCircle2 className="h-5 w-5 text-success" />
@@ -20,7 +20,7 @@ export function UploadRow({ item }: { item: UploadItem }) {
         ) : item.state === 'uploading' ? (
           <Video className="h-5 w-5" />
         ) : (
-          <Loader2 className="h-5 w-5 animate-spin" />
+          <Loader2 className="h-5 w-5 motion-safe:animate-spin" />
         )}
       </span>
       <div className="min-w-0 flex-1">

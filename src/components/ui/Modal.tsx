@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion, useDragControls, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useDragControls, type PanInfo } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { softSpring } from '@/lib/motion';
+import { softSpring, useReducedMotion } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 function useIsMobile() {
@@ -85,6 +85,11 @@ export function Modal({
     };
   }, [open]);
 
+  const finishSwipe = (_event: unknown, { offset, velocity }: PanInfo) => {
+    const height = panelRef.current?.offsetHeight ?? 400;
+    if (offset.y > Math.min(height * 0.28, 112) || (offset.y > 16 && velocity.y > 650)) onClose();
+  };
+
   const widths = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' };
   const panel = reduceMotion
     ? { initial: { opacity: 1 }, animate: { opacity: 1 }, exit: { opacity: 1 } }
@@ -117,36 +122,41 @@ export function Modal({
             aria-labelledby={title ? titleId : undefined}
             tabIndex={-1}
             transition={reduceMotion ? { duration: 0 } : softSpring}
-            drag={mobile ? 'y' : false}
+            drag={mobile && !reduceMotion ? 'y' : false}
             dragControls={dragControls}
             dragListener={false}
             dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.35 }}
-            onDragEnd={(_, info) => {
-              if (info.offset.y > 120 || info.velocity.y > 600) onClose();
-            }}
-            className={cn('material relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-sheet shadow-sheet outline-none sm:rounded-sheet', widths[size])}
+            dragElastic={{ top: 0.08, bottom: 1 }}
+            dragMomentum={false}
+            dragTransition={{ bounceStiffness: 520, bounceDamping: 42 }}
+            onDragEnd={finishSwipe}
+            className={cn('material-sheet relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-sheet shadow-sheet outline-none sm:rounded-sheet', widths[size])}
           >
             {mobile && (
-              <div aria-hidden="true" onPointerDown={(event) => dragControls.start(event)} className="flex h-9 w-full shrink-0 touch-none items-center justify-center">
-                <span className="h-1 w-10 rounded-full bg-label-tertiary/50" />
-              </div>
+              <motion.div
+                aria-hidden="true"
+                onPointerDown={reduceMotion ? undefined : (event) => dragControls.start(event)}
+                onPanEnd={reduceMotion ? finishSwipe : undefined}
+                className="flex h-10 w-full shrink-0 touch-none select-none items-center justify-center"
+              >
+                <span className="h-[5px] w-9 rounded-full bg-control-border" />
+              </motion.div>
             )}
-            <div className="flex items-center gap-3 border-b border-separator px-4 py-3 sm:px-6">
+            <div className="relative flex min-h-[60px] shrink-0 items-center justify-center border-b border-separator px-16 py-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="focus-ring press-feedback inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fill-secondary text-label-secondary hover:bg-fill hover:text-label"
+                className="focus-ring press-feedback absolute start-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-fill-secondary text-label hover:bg-fill sm:start-4"
                 aria-label={t('common.close')}
               >
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
-              <h2 id={titleId} className="min-w-0 text-headline">{title}</h2>
+              <h2 id={titleId} className="min-w-0 text-center text-headline">{title}</h2>
             </div>
-            <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6" onPointerDown={(e) => e.stopPropagation()}>
+            <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain bg-card px-4 py-6 sm:px-6" onPointerDown={(e) => e.stopPropagation()}>
               {children}
             </div>
-            {footer && <div className="flex flex-wrap justify-end gap-3 border-t border-separator px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">{footer}</div>}
+            {footer && <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-separator px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">{footer}</div>}
             {!footer && <div className="h-[env(safe-area-inset-bottom)] shrink-0" />}
           </motion.div>
         </div>

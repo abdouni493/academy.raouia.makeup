@@ -38,6 +38,12 @@
     "dragToReorder": "اسحب لإعادة الترتيب",
     "orderSaved": "تم حفظ الترتيب"
   },
+  "theme": {
+    "appearance": "المظهر",
+    "system": "حسب النظام",
+    "light": "فاتح",
+    "dark": "داكن"
+  },
   "nav": {
     "dashboard": "الرئيسية",
     "catalog": "الكتالوج",

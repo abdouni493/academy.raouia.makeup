@@ -44,10 +44,10 @@ export function AdminSetupForm({ onBack, onCreated }: { onBack: () => void; onCr
 
   return (
     <div>
-      <button onClick={onBack} className="focus-ring mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl text-subhead text-label-secondary hover:text-label">
+      <button onClick={onBack} className="focus-ring mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl text-subhead text-accent hover:text-label">
         <ArrowLeft className="rtl-flip h-4 w-4" /> {t('auth.backToLogin')}
       </button>
-      <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gradient text-accent-contrast shadow-soft">
+      <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent">
         <ShieldCheck className="h-6 w-6" />
       </span>
       <h1 className="text-large-title">{t('auth.setupTitle')}</h1>

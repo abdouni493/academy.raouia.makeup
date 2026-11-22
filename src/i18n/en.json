@@ -38,6 +38,12 @@
     "dragToReorder": "Drag to reorder",
     "orderSaved": "Order saved"
   },
+  "theme": {
+    "appearance": "Appearance",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "nav": {
     "dashboard": "Home",
     "catalog": "Catalog",

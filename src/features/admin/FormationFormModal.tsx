@@ -113,7 +113,7 @@ export function FormationFormModal({
         </>
       }
     >
-      <form className="grid gap-6 sm:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
+      <form className="grid gap-4 sm:grid-cols-2 sm:gap-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="sm:col-span-2">
           <CoverUpload value={cover} onChange={setCover} folder="formations" />
         </div>

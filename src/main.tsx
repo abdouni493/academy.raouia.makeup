@@ -5,8 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { MotionConfig } from 'framer-motion';
 import './i18n';
+import './assets/fonts/fonts.css';
 import './index.css';
-import './lib/theme';
+import { useThemeMode } from './lib/theme';
 import App from './App';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { UploadProvider } from '@/features/admin/uploads/UploadProvider';
@@ -17,6 +18,11 @@ const queryClient = new QueryClient({
   },
 });
 
+function AppearanceToaster() {
+  const theme = useThemeMode();
+  return <Toaster theme={theme} position="top-center" richColors closeButton toastOptions={{ className: 'font-sans' }} />;
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
@@ -25,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <AuthProvider>
           <UploadProvider>
             <App />
-            <Toaster theme="system" position="top-center" richColors closeButton toastOptions={{ className: 'font-sans' }} />
+            <AppearanceToaster />
           </UploadProvider>
         </AuthProvider>
         </MotionConfig>

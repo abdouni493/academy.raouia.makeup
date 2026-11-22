@@ -1,10 +1,11 @@
+import { LoadingTransition } from '@/components/Motion';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus, Search, Settings, Trash2, Video } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge, Button, ConfirmDialog, EmptyState, Input, Switch, TableSkeleton } from '@/components/ui';
+import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, Input, Switch, TableSkeleton } from '@/components/ui';
 import { CoverImage } from '@/components/CoverImage';
 import { LevelBadge } from '@/components/Badges';
 import { PageHeader } from '@/components/PageHeader';
@@ -75,10 +76,10 @@ export function FormationsListPage() {
   };
 
   const renderRow = (f: Row, handle?: React.ReactNode) => (
-    <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
+    <div className="flex flex-col gap-2 py-4 lg:flex-row lg:items-center lg:gap-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         {handle}
-        <div className="group h-16 w-24 shrink-0 overflow-hidden rounded-xl">
+        <div className="group h-14 w-16 shrink-0 overflow-hidden rounded-xl sm:h-16 sm:w-24">
           <CoverImage src={f.cover_url} alt={f.title} seed={f.id} />
         </div>
         <div className="min-w-0">
@@ -93,14 +94,12 @@ export function FormationsListPage() {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-2 sm:justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-1 lg:justify-end">
         <Switch checked={f.is_published} onChange={(v) => void togglePublish(f, v)} label={f.is_published ? t('common.published') : t('common.draft')} />
         <div className="flex gap-1">
-          <Link to={`/admin/formations/${f.id}`}>
-            <Button size="sm" variant="subtle" icon={<Settings className="h-4 w-4" />}>
-              <span className="hidden md:inline">{t('formations.manage')}</span>
-            </Button>
-          </Link>
+          <Link to={`/admin/formations/${f.id}`} aria-label={t('formations.manage')} className={buttonClassName('subtle', 'sm')}>
+              <Settings className="h-4 w-4" /> <span className="hidden md:inline">{t('formations.manage')}</span>
+            </Link>
           <Button size="icon" variant="ghost" onClick={() => setEditing(f)} title={t('common.edit')}>
             <Pencil className="h-4 w-4" />
           </Button>
@@ -124,28 +123,26 @@ export function FormationsListPage() {
       />
       <div className="relative mb-6 max-w-sm">
         <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-label-secondary" />
-        <Input className="ps-11" placeholder={t('common.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Input className="rounded-full ps-11" type="search" aria-label={t('common.search')} placeholder={t('common.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      {query.isLoading ? (
-        <div className="card">
-          <TableSkeleton />
-        </div>
-      ) : !query.data?.length ? (
-        <EmptyState
-          icon={<Video />}
-          title={t('formations.empty')}
-          text={t('formations.emptyText')}
-          action={<Button onClick={() => setCreating(true)}>{t('formations.new')}</Button>}
-        />
-      ) : search ? (
-        <div className="card divide-y divide-separator/60 overflow-hidden">{rows.length ? rows.map((f) => <div key={f.id}>{renderRow(f)}</div>) : <p className="text-sm text-label-secondary">{t('common.noResults')}</p>}</div>
-      ) : (
-        <>
-          <p className="mb-2 text-xs text-label-secondary">{t('common.dragToReorder')}</p>
-          <SortableList items={rows} onReorder={(n) => void reorder(n)} className="card divide-y divide-separator/60 overflow-hidden" renderItem={(f, handle) => renderRow(f, handle)} />
-        </>
-      )}
+      <LoadingTransition loading={query.isLoading} fallback={<div className="card"><TableSkeleton /></div>}>
+        {!query.data?.length ? (
+          <EmptyState
+            icon={<Video />}
+            title={t('formations.empty')}
+            text={t('formations.emptyText')}
+            action={<Button onClick={() => setCreating(true)}>{t('formations.new')}</Button>}
+          />
+        ) : search ? (
+          <div className="grouped-list overflow-hidden px-4 sm:px-6">{rows.length ? rows.map((f) => <div key={f.id}>{renderRow(f)}</div>) : <p className="text-sm text-label-secondary">{t('common.noResults')}</p>}</div>
+        ) : (
+          <>
+            <p className="mb-2 text-xs text-label-secondary">{t('common.dragToReorder')}</p>
+            <SortableList items={rows} onReorder={(n) => void reorder(n)} className="grouped-list overflow-hidden px-4 sm:px-6" renderItem={(f, handle) => renderRow(f, handle)} />
+          </>
+        )}
+      </LoadingTransition>
 
       <FormationFormModal open={creating || !!editing} formation={editing} onClose={() => (setCreating(false), setEditing(null))} />
       <ConfirmDialog

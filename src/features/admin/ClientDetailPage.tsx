@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BarChart3, ChevronLeft, Crown, KeyRound, Mail, MessageCircle, Pencil, Phone, Power, ShieldCheck, Trash2, Unlock, Video } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge, Button, Card, CardHeader, ConfirmDialog, EmptyState, Field, Input, PageLoader, Select } from '@/components/ui';
+import { Badge, Button, buttonClassName, Card, CardHeader, ConfirmDialog, EmptyState, Field, Input, PageLoader, Select } from '@/components/ui';
 import { ProgressBar } from '@/components/Badges';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { localeFor } from '@/i18n';
@@ -172,7 +172,9 @@ export function ClientDetailPage() {
 
   if (clientQ.isLoading) return <PageLoader />;
   const client = clientQ.data;
-  if (!client) return <EmptyState icon={<ShieldCheck />} title="404" action={<Link to="/admin/clients"><Button variant="secondary">{t('common.back')}</Button></Link>} />;
+  if (!client) return <EmptyState icon={<ShieldCheck />} title="404" action={<Link to="/admin/clients" className={buttonClassName('secondary', 'md')}>
+              {t('common.back')}
+            </Link>} />;
 
   const options = type === 'pack' ? catalogQ.data?.packs ?? [] : catalogQ.data?.formations ?? [];
 
@@ -182,23 +184,22 @@ export function ClientDetailPage() {
         <ChevronLeft className="rtl-flip h-4 w-4" /> {t('clients.title')}
       </Link>
 
-      <Card className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-24 bg-blush-gradient" />
-        <div className="relative flex flex-col gap-6 p-6 pt-10 xl:flex-row xl:items-end">
-          <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-title-1 text-accent-contrast shadow-soft">
+      <Card className="overflow-hidden">
+        <div className="flex flex-col gap-4 p-4 sm:p-6 xl:flex-row xl:flex-wrap xl:items-center">
+          <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-accent-soft text-title-1 text-accent">
             {(client.full_name || client.email || '?').slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-title-2">{client.full_name || '—'}</h1>
+              <h1 className="break-words text-large-title">{client.full_name || '—'}</h1>
               {client.is_active ? <Badge tone="green">{t('common.active')}</Badge> : <Badge tone="red">{t('clients.suspended')}</Badge>}
             </div>
-            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-label-secondary">
-              <span className="flex items-center gap-1.5" dir="ltr">
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-subhead text-label-secondary">
+              <span className="flex min-w-0 items-center gap-2 [overflow-wrap:anywhere]" dir="ltr">
                 <Mail className="h-4 w-4" /> {client.email}
               </span>
               {client.phone && (
-                <span className="flex items-center gap-1.5" dir="ltr">
+                <span className="flex min-w-0 items-center gap-2 [overflow-wrap:anywhere]" dir="ltr">
                   <Phone className="h-4 w-4" /> {client.phone}
                 </span>
               )}
@@ -206,15 +207,13 @@ export function ClientDetailPage() {
                 {t('clients.joined')} {formatDate(client.created_at, locale)}
               </span>
             </div>
-            {client.notes && <p className="mt-3 whitespace-pre-line rounded-xl bg-champagne/50 p-3 text-sm text-label">{client.notes}</p>}
+            {client.notes && <p className="mt-3 whitespace-pre-line rounded-xl bg-fill-tertiary p-4 text-sm text-label">{client.notes}</p>}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex basis-full flex-wrap gap-2 border-t border-separator pt-4">
             {client.phone && (
-              <a href={whatsappLink('', client.phone)} target="_blank" rel="noreferrer">
-                <Button size="sm" variant="ghost" icon={<MessageCircle className="h-4 w-4" />}>
-                  {t('clients.contact')}
-                </Button>
-              </a>
+              <a href={whatsappLink('', client.phone)} target="_blank" rel="noreferrer" className={buttonClassName('ghost', 'sm')}>
+              <MessageCircle className="h-4 w-4" /> {t('clients.contact')}
+            </a>
             )}
             <Button size="sm" variant="secondary" icon={<Pencil className="h-4 w-4" />} onClick={() => setEditing(true)}>
               {t('common.edit')}
@@ -235,7 +234,7 @@ export function ClientDetailPage() {
       <div className="grid gap-6 xl:grid-cols-2">
         <Card>
           <CardHeader icon={<Unlock className="h-5 w-5" />} title={t('clients.access')} />
-          <form onSubmit={grant} className="grid gap-3 border-b border-separator/60 p-6 sm:grid-cols-[130px_1fr]">
+          <form onSubmit={grant} className="grid gap-4 border-b border-separator p-4 sm:grid-cols-[minmax(8rem,1fr)_2fr] sm:p-6">
             <Field label={t('clients.type')}>
               <Select
                 value={type}
@@ -267,13 +266,13 @@ export function ClientDetailPage() {
               </div>
             </Field>
           </form>
-          <div className="divide-y divide-separator/60">
+          <div className="divide-y divide-separator px-4 sm:px-6">
             {(grantsQ.data ?? []).length === 0 && <p className="p-6 text-center text-sm text-label-secondary">{t('clients.noGrants')}</p>}
             {(grantsQ.data ?? []).map((g) => {
               const expired = isExpired(g.expires_at);
               return (
-                <div key={g.id} className="flex items-center gap-3 px-6 py-3.5">
-                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${g.pack_id ? 'bg-champagne text-rosegold' : 'bg-accent-soft text-accent'}`}>
+                <div key={g.id} className="flex flex-wrap items-center gap-2 py-4">
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${g.pack_id ? 'bg-info-soft text-info' : 'bg-accent-soft text-accent'}`}>
                     {g.pack_id ? <Crown className="h-4 w-4" /> : <Video className="h-4 w-4" />}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -294,10 +293,10 @@ export function ClientDetailPage() {
 
         <Card>
           <CardHeader icon={<BarChart3 className="h-5 w-5" />} title={t('clients.progress')} />
-          <div className="divide-y divide-separator/60">
+          <div className="divide-y divide-separator px-4 sm:px-6">
             {progressRows.length === 0 && <p className="p-6 text-center text-sm text-label-secondary">{t('clients.noProgress')}</p>}
             {progressRows.map((r) => (
-              <div key={r.id} className="px-6 py-4">
+              <div key={r.id} className="py-4">
                 <div className="flex items-center justify-between gap-3">
                   <span className="truncate text-sm font-medium text-label">{r.title}</span>
                   <span className="shrink-0 text-xs tabular-nums text-label-secondary">

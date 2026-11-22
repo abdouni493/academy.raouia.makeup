@@ -10,15 +10,15 @@ export function CoverImage({ src, alt, seed = '', pack = false, className }: { s
   }
   const n = Array.from(seed).reduce((a, c) => a + c.charCodeAt(0), 0);
   const Icon = pack ? Crown : icons[n % icons.length];
-  const gradients = [
-    'from-blush-200 via-blush-100 to-champagne',
-    'from-rosegold-light via-blush-100 to-nude',
-    'from-champagne via-blush-100 to-blush-200',
-    'from-nude via-champagne to-blush-100',
+  const fills = [
+    'bg-accent-soft',
+    'bg-info-soft',
+    'bg-warning-soft',
+    'bg-surface-tertiary',
   ];
   return (
-    <div className={cn('relative flex h-full w-full items-center justify-center overflow-hidden bg-gradient-to-br', gradients[n % gradients.length], className)}>
-      <Icon className="relative h-12 w-12 text-rosegold" strokeWidth={1.25} />
+    <div className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', fills[n % fills.length], className)}>
+      <Icon className="relative h-12 w-12 text-label-secondary" strokeWidth={1.25} />
     </div>
   );
 }

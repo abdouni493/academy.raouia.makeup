@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Copy, MessageCircle, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Button, Field, Input, Modal, Textarea } from '@/components/ui';
+import { Button, buttonClassName, Field, Input, Modal, Textarea } from '@/components/ui';
 import { BRAND_NAME } from '@/lib/config';
 import { api } from '@/lib/functions';
 import { errorMessage, generatePassword, whatsappLink } from '@/lib/utils';
@@ -46,14 +46,14 @@ export function CredentialsModal({
           <Button variant="secondary" icon={<Copy className="h-4 w-4" />} onClick={() => void copy()}>
             {t('common.copy')}
           </Button>
-          <a href={whatsappLink(text, shown.phone || '')} target="_blank" rel="noreferrer">
-            <Button icon={<MessageCircle className="h-4 w-4" />}>{t('clients.sendWhatsapp')}</Button>
+          <a href={whatsappLink(text, shown.phone || '')} target="_blank" rel="noreferrer" className={buttonClassName('primary', 'md')}>
+            <MessageCircle className="h-4 w-4" /> {t('clients.sendWhatsapp')}
           </a>
         </>
       }
     >
-      <p className="mb-4 rounded-xl bg-champagne/70 p-3 text-sm text-label">{t('clients.credentialsHint')}</p>
-      <pre className="whitespace-pre-wrap rounded-xl bg-surface-tertiary p-4 font-sans text-sm text-label" dir="auto">
+      <p className="mb-4 rounded-xl bg-info-soft p-3 text-sm text-label">{t('clients.credentialsHint')}</p>
+      <pre className="whitespace-pre-wrap rounded-xl bg-fill-tertiary p-4 font-sans text-sm text-label" dir="auto">
         {text}
       </pre>
     </Modal>
@@ -65,7 +65,7 @@ export function PasswordInput({ value, onChange }: { value: string; onChange: (v
   return (
     <div className="flex gap-2">
       <Input dir="ltr" className="font-mono" value={value} onChange={(e) => onChange(e.target.value)} />
-      <Button variant="subtle" icon={<RefreshCw className="h-4 w-4" />} onClick={() => onChange(generatePassword())}>
+      <Button variant="subtle" aria-label={t('clients.generate')} icon={<RefreshCw className="h-4 w-4" />} onClick={() => onChange(generatePassword())}>
         <span className="hidden sm:inline">{t('clients.generate')}</span>
       </Button>
       <Button
@@ -158,7 +158,7 @@ export function ClientFormModal({
         </>
       }
     >
-      <form className="grid gap-6 sm:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
+      <form className="grid gap-4 sm:grid-cols-2 sm:gap-6" onSubmit={handleSubmit(onSubmit)}>
         <Field label={t('clients.fullName')} error={formState.errors.full_name && t('common.required')} className="sm:col-span-2">
           <Input {...register('full_name')} invalid={!!formState.errors.full_name} />
         </Field>

@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { BarChart3, Crown, GraduationCap, LogOut, Menu, Users, Video, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AnimatedOutlet } from '@/components/AnimatedOutlet';
 import { Logo } from '@/components/Logo';
+import { NavigationBrand } from './NavigationBrand';
+import { MobileTabBar } from './MobileTabBar';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { UploadTray } from '@/features/admin/uploads/UploadTray';
-import { spring, reducedTransition } from '@/lib/motion';
+import { useReducedMotion, spring, reducedTransition } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 export function AdminLayout() {
@@ -25,13 +28,16 @@ export function AdminLayout() {
 
   useEffect(() => {
     if (!open) return;
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const syncSize = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener('change', syncSize);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const frame = requestAnimationFrame(() => drawerRef.current?.querySelector<HTMLButtonElement>('button')?.focus());
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false);
       if (event.key !== 'Tab') return;
-      const elements = drawerRef.current?.querySelectorAll<HTMLElement>('a[href], button:not(:disabled)');
+      const elements = drawerRef.current?.querySelectorAll<HTMLElement>('a[href], button:not(:disabled), input[type=radio]:checked');
       if (!elements?.length) return;
       const first = elements[0];
       const last = elements[elements.length - 1];
@@ -43,7 +49,8 @@ export function AdminLayout() {
       cancelAnimationFrame(frame);
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKey);
-      menuRef.current?.focus();
+      desktop.removeEventListener('change', syncSize);
+      if (!desktop.matches) menuRef.current?.focus();
     };
   }, [open]);
 
@@ -54,8 +61,9 @@ export function AdminLayout() {
     { to: '/admin/clients', label: t('nav.clients'), icon: Users, end: false },
   ];
 
+  const sectionTitle = links.find(({ to, end }) => end ? location.pathname === to : location.pathname.startsWith(to))?.label ?? t('nav.admin');
   const sidebar = (layoutId?: string) => (
-    <div className="sidebar-material flex h-full flex-col overflow-y-auto border-e border-sidebar-fill">
+    <div className="material-sidebar flex h-full flex-col overflow-y-auto border-e border-sidebar-fill">
       <div className="flex min-h-24 shrink-0 items-center justify-between gap-2 px-6 py-4">
         <Logo light to="/admin" />
         <button type="button" className="focus-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sidebar-secondary hover:bg-sidebar-fill lg:hidden" onClick={() => setOpen(false)} aria-label={t('common.close')}>
@@ -68,27 +76,35 @@ export function AdminLayout() {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <motion.span layoutId={reduceMotion ? undefined : layoutId} className="absolute inset-0 rounded-xl bg-sidebar-fill" transition={transition} />
+                  <motion.span layoutId={reduceMotion ? undefined : layoutId} className="absolute inset-0 rounded-xl bg-accent-soft" transition={transition} />
                 )}
-                <l.icon className={cn('relative h-5 w-5 shrink-0', isActive ? 'text-sidebar-label' : 'text-sidebar-secondary group-hover:text-sidebar-label')} aria-hidden="true" />
-                <span className={cn('relative', isActive ? 'font-semibold text-sidebar-label' : 'text-sidebar-secondary group-hover:text-sidebar-label')}>{l.label}</span>
-                {isActive && <span className="relative ms-auto h-1.5 w-1.5 shrink-0 rounded-full bg-sidebar-label" aria-hidden="true" />}
+                <l.icon className={cn('relative h-5 w-5 shrink-0', isActive ? 'text-accent' : 'text-sidebar-secondary group-hover:text-sidebar-label')} aria-hidden="true" />
+                <span className={cn('relative', isActive ? 'font-semibold text-accent' : 'text-sidebar-secondary group-hover:text-sidebar-label')}>{l.label}</span>
               </>
             )}
           </NavLink>
         ))}
       </nav>
       <div className="space-y-4 border-t border-sidebar-fill p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        <LanguageSwitcher dark />
+        <div className="space-y-2 px-2">
+          <div className="flex flex-wrap items-center justify-between gap-1">
+            <span className="text-footnote font-medium text-sidebar-secondary">{t('theme.appearance')}</span>
+            <ThemeSwitcher />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-1">
+            <span className="text-footnote font-medium text-sidebar-secondary">{t('common.language')}</span>
+            <LanguageSwitcher />
+          </div>
+        </div>
         <NavLink to="/catalog" className="focus-ring flex min-h-11 items-center gap-3 rounded-xl px-4 py-3 text-subhead text-sidebar-secondary transition-colors hover:bg-sidebar-fill hover:text-sidebar-label">
           <GraduationCap className="h-5 w-5" aria-hidden="true" /> {t('nav.clientArea')}
         </NavLink>
         <div className="flex items-center justify-between gap-2 rounded-xl bg-sidebar-fill/50 px-4 py-3">
           <div className="min-w-0">
-            <div className="truncate text-subhead font-semibold text-sidebar-label">{profile?.full_name || 'Admin'}</div>
+            <div className="truncate text-subhead font-semibold text-sidebar-label">{profile?.full_name || t('nav.admin')}</div>
             <div className="mt-1 truncate text-footnote text-sidebar-secondary">{profile?.email}</div>
           </div>
-          <motion.button whileTap={reduceMotion ? undefined : { scale: 0.98 }} transition={transition} onClick={() => void signOut()} className="focus-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sidebar-secondary hover:bg-sidebar-fill hover:text-sidebar-label" title={t('common.logout')} aria-label={t('common.logout')}>
+          <motion.button transition={transition} onClick={() => void signOut()} className="focus-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sidebar-secondary hover:bg-sidebar-fill hover:text-sidebar-label" title={t('common.logout')} aria-label={t('common.logout')}>
             <LogOut className="h-5 w-5" aria-hidden="true" />
           </motion.button>
         </div>
@@ -97,7 +113,7 @@ export function AdminLayout() {
   );
 
   return (
-    <div className="min-h-dvh lg:ps-72">
+    <div className="min-h-dvh bg-grouped pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0 lg:ps-72">
       <aside className="fixed inset-y-0 start-0 z-40 hidden w-72 lg:block">{sidebar('admin-nav-desktop')}</aside>
       <AnimatePresence>
         {open && (
@@ -111,16 +127,17 @@ export function AdminLayout() {
           </motion.div>
         )}
       </AnimatePresence>
-      <header className="material sticky top-0 z-30 flex min-h-20 items-center justify-between gap-2 border-b border-separator/70 px-4 pt-[env(safe-area-inset-top)] lg:hidden">
-        <motion.button ref={menuRef} whileTap={reduceMotion ? undefined : { scale: 0.98 }} transition={transition} onClick={() => setOpen(true)} className="focus-ring flex h-11 w-11 items-center justify-center rounded-full text-label hover:bg-fill-secondary" aria-label={t('nav.admin')} aria-expanded={open} aria-controls="admin-navigation">
+      <header className="material-bar sticky top-0 z-30 flex min-h-16 items-center justify-between gap-2 border-b border-separator/70 px-4 pt-[env(safe-area-inset-top)] lg:hidden">
+        <motion.button ref={menuRef} transition={transition} onClick={() => setOpen(true)} className="focus-ring flex h-11 w-11 items-center justify-center rounded-full text-label hover:bg-fill-secondary" aria-label={t('nav.admin')} aria-expanded={open} aria-controls={open ? 'admin-navigation' : undefined}>
           <Menu className="h-5 w-5" aria-hidden="true" />
         </motion.button>
-        <Logo to="/admin" />
+        <NavigationBrand to="/admin" title={sectionTitle} />
         <span className="w-11" aria-hidden="true" />
       </header>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-10">
         <AnimatedOutlet />
       </main>
+      <MobileTabBar tabs={links} label={t('nav.admin')} layoutId="admin-tab-indicator" className="lg:hidden" />
       <UploadTray />
     </div>
   );

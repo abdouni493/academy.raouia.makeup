@@ -1,9 +1,10 @@
+import { LoadingTransition } from '@/components/Motion';
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Crown, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge, Button, CardGridSkeleton, ConfirmDialog, EmptyState, Field, Input, Modal, Select, Switch, Textarea } from '@/components/ui';
+import { Badge, Button, TableSkeleton, ConfirmDialog, EmptyState, Field, Input, Modal, Select, Switch, Textarea } from '@/components/ui';
 import { CoverImage } from '@/components/CoverImage';
 import { CoverUpload } from '@/components/CoverUpload';
 import { PageHeader } from '@/components/PageHeader';
@@ -82,55 +83,55 @@ export function PacksPage() {
           </Button>
         }
       />
-      {packs.isLoading ? (
-        <CardGridSkeleton count={3} />
-      ) : !packs.data?.length ? (
-        <EmptyState icon={<Crown />} title={t('packs.empty')} text={t('packs.emptyText')} action={<Button onClick={() => setCreating(true)}>{t('packs.new')}</Button>} />
-      ) : (
-        <>
-          <p className="mb-2 text-xs text-label-secondary">{t('common.dragToReorder')}</p>
-          <SortableList
-            items={packs.data}
-            onReorder={(n) => void reorder(n)}
-            className="card divide-y divide-separator/60 overflow-hidden"
-            renderItem={(p, handle) => (
-              <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  {handle}
-                  <div className="group h-16 w-24 shrink-0 overflow-hidden rounded-xl">
-                    <CoverImage src={p.cover_url} alt={p.title} seed={p.id} pack />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate font-semibold text-label">{p.title}</div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      {p.price !== null && <Badge tone="gold">{formatPrice(p.price, p.currency, localeFor(i18n.language))}</Badge>}
-                      <Badge tone="gray">{t('packs.includes', { count: p.pack_formations.length })}</Badge>
+      <LoadingTransition loading={packs.isLoading} fallback={<div className="card"><TableSkeleton rows={3} /></div>}>
+        {!packs.data?.length ? (
+          <EmptyState icon={<Crown />} title={t('packs.empty')} text={t('packs.emptyText')} action={<Button onClick={() => setCreating(true)}>{t('packs.new')}</Button>} />
+        ) : (
+          <>
+            <p className="mb-2 text-xs text-label-secondary">{t('common.dragToReorder')}</p>
+            <SortableList
+              items={packs.data}
+              onReorder={(n) => void reorder(n)}
+              className="grouped-list overflow-hidden px-4 sm:px-6"
+              renderItem={(p, handle) => (
+                <div className="flex flex-col gap-2 py-4 lg:flex-row lg:items-center lg:gap-4">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    {handle}
+                    <div className="group h-14 w-16 shrink-0 overflow-hidden rounded-xl sm:h-16 sm:w-24">
+                      <CoverImage src={p.cover_url} alt={p.title} seed={p.id} pack />
                     </div>
-                    <div className="mt-1 truncate text-xs text-label-secondary">
-                      {[...p.pack_formations]
-                        .sort((a, b) => a.sort_order - b.sort_order)
-                        .map((pf) => titleOf[pf.formation_id])
-                        .filter(Boolean)
-                        .join(' · ')}
+                    <div className="min-w-0">
+                      <div className="truncate font-semibold text-label">{p.title}</div>
+                      <div className="mt-1 flex flex-wrap items-center gap-2">
+                        {p.price !== null && <Badge tone="gold">{formatPrice(p.price, p.currency, localeFor(i18n.language))}</Badge>}
+                        <Badge tone="gray">{t('packs.includes', { count: p.pack_formations.length })}</Badge>
+                      </div>
+                      <div className="mt-1 truncate text-xs text-label-secondary">
+                        {[...p.pack_formations]
+                          .sort((a, b) => a.sort_order - b.sort_order)
+                          .map((pf) => titleOf[pf.formation_id])
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-1 lg:justify-end">
+                    <Switch checked={p.is_published} onChange={(v) => void togglePublish(p, v)} label={p.is_published ? t('common.published') : t('common.draft')} />
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" onClick={() => setEditing(p)} title={t('common.edit')}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="text-danger hover:bg-danger-soft" onClick={() => setDeleting(p)} title={t('common.delete')}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between gap-2 sm:justify-end">
-                  <Switch checked={p.is_published} onChange={(v) => void togglePublish(p, v)} label={p.is_published ? t('common.published') : t('common.draft')} />
-                  <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" onClick={() => setEditing(p)} title={t('common.edit')}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="text-danger hover:bg-danger-soft" onClick={() => setDeleting(p)} title={t('common.delete')}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          />
-        </>
-      )}
+              )}
+            />
+          </>
+        )}
+      </LoadingTransition>
 
       <PackFormModal
         open={creating || !!editing}
@@ -259,7 +260,7 @@ function PackFormModal({
         </>
       }
     >
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
         <div className="sm:col-span-2">
           <CoverUpload value={cover} onChange={setCover} folder="packs" />
         </div>
@@ -300,9 +301,9 @@ function PackFormModal({
             <SortableList
               items={selected}
               onReorder={setSelected}
-              className="space-y-2"
+              className="grouped-list px-2"
               renderItem={(s, handle, i) => (
-                <div className="flex items-center gap-2 rounded-xl border border-separator/60 bg-surface-secondary px-2 py-1.5">
+                <div className="flex items-center gap-2 py-2">
                   {handle}
                   <span className="flex h-6 w-6 items-center justify-center rounded-md bg-accent-soft text-xs font-semibold text-accent">{i + 1}</span>
                   <span className="flex-1 truncate text-sm">{titleOf[s.id] ?? '—'}</span>
