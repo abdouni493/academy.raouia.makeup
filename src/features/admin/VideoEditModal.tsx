@@ -53,7 +53,7 @@ export function VideoEditModal({ video, sections, onClose }: { video: Video | nu
         </>
       }
     >
-      <div className="space-y-5">
+      <div className="space-y-6">
         <Field label={t('videos.fieldTitle')}>
           <Input value={title} onChange={(e) => setTitle(e.target.value)} />
         </Field>

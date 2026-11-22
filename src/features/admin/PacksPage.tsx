@@ -88,25 +88,25 @@ export function PacksPage() {
         <EmptyState icon={<Crown />} title={t('packs.empty')} text={t('packs.emptyText')} action={<Button onClick={() => setCreating(true)}>{t('packs.new')}</Button>} />
       ) : (
         <>
-          <p className="mb-2 text-xs text-muted">{t('common.dragToReorder')}</p>
+          <p className="mb-2 text-xs text-label-secondary">{t('common.dragToReorder')}</p>
           <SortableList
             items={packs.data}
             onReorder={(n) => void reorder(n)}
-            className="space-y-3"
+            className="card divide-y divide-separator/60 overflow-hidden"
             renderItem={(p, handle) => (
-              <div className="card flex flex-col gap-4 p-3 sm:flex-row sm:items-center">
+              <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   {handle}
                   <div className="group h-16 w-24 shrink-0 overflow-hidden rounded-xl">
                     <CoverImage src={p.cover_url} alt={p.title} seed={p.id} pack />
                   </div>
                   <div className="min-w-0">
-                    <div className="truncate font-semibold text-plum">{p.title}</div>
+                    <div className="truncate font-semibold text-label">{p.title}</div>
                     <div className="mt-1 flex flex-wrap items-center gap-2">
                       {p.price !== null && <Badge tone="gold">{formatPrice(p.price, p.currency, localeFor(i18n.language))}</Badge>}
                       <Badge tone="gray">{t('packs.includes', { count: p.pack_formations.length })}</Badge>
                     </div>
-                    <div className="mt-1 truncate text-xs text-muted">
+                    <div className="mt-1 truncate text-xs text-label-secondary">
                       {[...p.pack_formations]
                         .sort((a, b) => a.sort_order - b.sort_order)
                         .map((pf) => titleOf[pf.formation_id])
@@ -121,7 +121,7 @@ export function PacksPage() {
                     <Button size="icon" variant="ghost" onClick={() => setEditing(p)} title={t('common.edit')}>
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="ghost" className="text-red-500 hover:bg-red-50" onClick={() => setDeleting(p)} title={t('common.delete')}>
+                    <Button size="icon" variant="ghost" className="text-danger hover:bg-danger-soft" onClick={() => setDeleting(p)} title={t('common.delete')}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -259,7 +259,7 @@ function PackFormModal({
         </>
       }
     >
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <CoverUpload value={cover} onChange={setCover} folder="packs" />
         </div>
@@ -293,20 +293,20 @@ function PackFormModal({
         </Field>
 
         <div className="space-y-3 sm:col-span-2">
-          <span className="block text-sm font-medium text-plum">{t('packs.formations')}</span>
+          <span className="block text-sm font-medium text-label">{t('packs.formations')}</span>
           {selected.length === 0 ? (
-            <p className="rounded-xl bg-blush-50 p-3 text-sm text-muted">{t('packs.noFormations')}</p>
+            <p className="rounded-xl bg-surface-tertiary p-3 text-sm text-label-secondary">{t('packs.noFormations')}</p>
           ) : (
             <SortableList
               items={selected}
               onReorder={setSelected}
               className="space-y-2"
               renderItem={(s, handle, i) => (
-                <div className="flex items-center gap-2 rounded-xl border border-blush-100 bg-white px-2 py-1.5">
+                <div className="flex items-center gap-2 rounded-xl border border-separator/60 bg-surface-secondary px-2 py-1.5">
                   {handle}
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blush-100 text-xs font-semibold text-blush-700">{i + 1}</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-accent-soft text-xs font-semibold text-accent">{i + 1}</span>
                   <span className="flex-1 truncate text-sm">{titleOf[s.id] ?? '—'}</span>
-                  <button className="rounded-lg p-1.5 text-muted hover:bg-red-50 hover:text-red-500" onClick={() => setSelected((p) => p.filter((x) => x.id !== s.id))}>
+                  <button aria-label={t('common.delete')} className="focus-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-label-secondary hover:bg-danger-soft hover:text-danger" onClick={() => setSelected((p) => p.filter((x) => x.id !== s.id))}>
                     <X className="h-4 w-4" />
                   </button>
                 </div>

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, PlayCircle, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { StaggerGroup, StaggerItem } from '@/components/Motion';
 import { ease } from '@/lib/motion';
@@ -14,6 +14,7 @@ import { FormationCard } from './FormationCard';
 import { useCatalog, useMyProgress } from './queries';
 
 export function DashboardPage() {
+  const reducedMotion = useReducedMotion();
   const { t } = useTranslation();
   const { profile } = useAuth();
   const catalog = useCatalog();
@@ -37,33 +38,23 @@ export function DashboardPage() {
   return (
     <div className="space-y-12">
       <motion.section
-        initial={{ opacity: 0, y: 16, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease }}
-        className="relative overflow-hidden rounded-3xl bg-blush-gradient p-6 shadow-soft sm:p-10"
+        initial={reducedMotion ? false : { opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reducedMotion ? 0 : 0.2, ease }}
+        className="relative overflow-hidden rounded-3xl border border-separator/60 bg-blush-gradient p-6 sm:p-10"
       >
-        <motion.div
-          className="absolute -end-10 -top-16 h-56 w-56 rounded-full bg-blush-200/70 blur-3xl"
-          animate={{ x: [0, -20, 0], y: [0, 14, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute -bottom-20 end-1/3 h-48 w-48 rounded-full bg-champagne blur-3xl"
-          animate={{ x: [0, 24, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div className="relative" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.5, ease }}>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-rosegold">
+        <div className="relative max-w-2xl">
+          <div className="mb-4 inline-flex items-center gap-2 text-footnote font-semibold text-rosegold">
             <Sparkles className="h-3.5 w-3.5" /> {t('nav.dashboard')}
           </div>
-          <h1 className="text-3xl font-semibold sm:text-4xl">{t('client.hello', { name: firstName })}</h1>
-          <p className="mt-2 text-muted">{t('client.welcome')}</p>
-        </motion.div>
+          <h1 className="text-large-title">{t('client.hello', { name: firstName })}</h1>
+          <p className="mt-2 text-label-secondary">{t('client.welcome')}</p>
+        </div>
       </motion.section>
 
       {continueWatching.length > 0 && (
         <section>
-          <h2 className="mb-5 text-2xl font-semibold">{t('client.continueWatching')}</h2>
+          <h2 className="mb-6 text-title-2">{t('client.continueWatching')}</h2>
           <StaggerGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {continueWatching.map((p) => {
               const v = p.videos!;
@@ -72,21 +63,21 @@ export function DashboardPage() {
                 <StaggerItem key={p.video_id}>
                 <Link
                   to={`/formation/${v.formations!.slug}?v=${v.id}`}
-                  className="card group block overflow-hidden transition-shadow hover:shadow-glow"
+                  className="card group block overflow-hidden transition-shadow hover:shadow-elevated"
                 >
                   <div className="relative aspect-video overflow-hidden">
                     <CoverImage src={v.thumbnail_url || v.formations!.cover_url} alt={v.title} seed={v.id} />
-                    <div className="absolute inset-0 flex items-center justify-center bg-plum/20 opacity-0 transition group-hover:opacity-100">
+                    <div className="absolute inset-0 flex items-center justify-center bg-surface-inverse/35 opacity-0 transition group-hover:opacity-100">
                       <PlayCircle className="h-12 w-12 text-white drop-shadow" />
                     </div>
-                    <span className="absolute bottom-2 end-2 rounded-md bg-black/60 px-1.5 py-0.5 text-[11px] text-white" dir="ltr">
+                    <span className="absolute bottom-2 end-2 rounded-md bg-surface-inverse/85 px-2 py-1 text-caption text-white" dir="ltr">
                       {formatDuration(p.last_position_seconds)} / {formatDuration(v.duration_seconds)}
                     </span>
                   </div>
                   <ProgressBar value={pct} className="rounded-none" />
                   <div className="p-4">
-                    <div className="truncate text-xs text-rosegold">{v.formations!.title}</div>
-                    <div className="mt-0.5 truncate font-medium text-plum">{v.title}</div>
+                    <div className="truncate text-footnote text-label-secondary">{v.formations!.title}</div>
+                    <div className="mt-0.5 truncate font-medium text-label">{v.title}</div>
                   </div>
                 </Link>
                 </StaggerItem>
@@ -98,10 +89,10 @@ export function DashboardPage() {
       {progress.isLoading && <Skeleton className="h-40 w-full" />}
 
       <section>
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <h2 className="text-2xl font-semibold">{t('client.myFormations')}</h2>
-          <Link to="/catalog" className="text-sm font-medium text-rosegold hover:text-blush-600">
-            {t('nav.catalog')} →
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <h2 className="text-title-2">{t('client.myFormations')}</h2>
+          <Link to="/catalog" className="inline-flex min-h-11 items-center text-subhead font-semibold text-accent hover:text-accent-pressed">
+            {t('nav.catalog')} <span className="ms-2 inline-block rtl-flip" aria-hidden>→</span>
           </Link>
         </div>
         {catalog.isLoading ? (
@@ -120,7 +111,7 @@ export function DashboardPage() {
             }
           />
         ) : (
-          <StaggerGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {mine.map((f) => (
               <StaggerItem key={f.id}>
                 <FormationCard

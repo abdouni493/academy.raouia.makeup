@@ -43,15 +43,15 @@ export function AdminSetupForm({ onBack, onCreated }: { onBack: () => void; onCr
   };
 
   return (
-    <div className="animate-fade-in">
-      <button onClick={onBack} className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-plum">
+    <div>
+      <button onClick={onBack} className="focus-ring mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl text-subhead text-label-secondary hover:text-label">
         <ArrowLeft className="rtl-flip h-4 w-4" /> {t('auth.backToLogin')}
       </button>
-      <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-glow">
+      <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gradient text-accent-contrast shadow-soft">
         <ShieldCheck className="h-6 w-6" />
       </span>
-      <h1 className="text-3xl font-semibold">{t('auth.setupTitle')}</h1>
-      <p className="mt-2 text-muted">{t('auth.setupHelp')}</p>
+      <h1 className="text-large-title">{t('auth.setupTitle')}</h1>
+      <p className="mt-2 text-label-secondary">{t('auth.setupHelp')}</p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
         <Field label={t('auth.fullName')} error={formState.errors.full_name?.message}>
           <Input autoComplete="name" {...register('full_name')} invalid={!!formState.errors.full_name} />

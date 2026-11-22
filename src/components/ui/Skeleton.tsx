@@ -1,16 +1,18 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('animate-pulse rounded-xl bg-gradient-to-r from-blush-100 via-blush-50 to-blush-100', className)} />;
+  return <div aria-hidden="true" className={cn('animate-pulse rounded-lg bg-fill-secondary motion-reduce:animate-none', className)} />;
 }
 
 export function CardGridSkeleton({ count = 6 }: { count?: number }) {
+  const { t } = useTranslation();
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div role="status" aria-label={t('common.loading')} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="card overflow-hidden">
           <Skeleton className="aspect-[16/10] rounded-none" />
-          <div className="space-y-3 p-5">
+          <div className="space-y-4 p-6">
             <Skeleton className="h-5 w-2/3" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-2 w-full" />
@@ -22,8 +24,9 @@ export function CardGridSkeleton({ count = 6 }: { count?: number }) {
 }
 
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
+  const { t } = useTranslation();
   return (
-    <div className="space-y-3 p-5">
+    <div role="status" aria-label={t('common.loading')} className="space-y-4 p-6">
       {Array.from({ length: rows }).map((_, i) => (
         <Skeleton key={i} className="h-12 w-full" />
       ))}
@@ -32,9 +35,11 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
 }
 
 export function PageLoader() {
+  const { t } = useTranslation();
   return (
-    <div className="flex min-h-[60dvh] items-center justify-center">
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-blush-200 border-t-blush-500" />
+    <div role="status" className="flex min-h-[60dvh] flex-col items-center justify-center gap-4 text-footnote text-label-secondary">
+      <div aria-hidden="true" className="h-8 w-8 animate-spin rounded-full border-2 border-fill border-t-accent motion-reduce:animate-none" />
+      <span>{t('common.loading')}</span>
     </div>
   );
 }

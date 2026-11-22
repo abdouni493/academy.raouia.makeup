@@ -1,5 +1,5 @@
 import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui';
 import type { Level, VideoStatus } from '@/types/database';
@@ -30,14 +30,15 @@ export function LevelBadge({ level, className }: { level: Level; className?: str
 }
 
 export function ProgressBar({ value, className }: { value: number; className?: string }) {
+  const reducedMotion = useReducedMotion();
   const pct = Math.max(0, Math.min(100, value));
   return (
-    <div className={`h-1.5 w-full overflow-hidden rounded-full bg-blush-100 ${className ?? ''}`}>
+    <div className={`h-1.5 w-full overflow-hidden rounded-full bg-fill-secondary ${className ?? ''}`}>
       <motion.div
         className="h-full rounded-full bg-brand-gradient"
-        initial={{ width: 0 }}
+        initial={reducedMotion ? false : { width: 0 }}
         animate={{ width: `${pct}%` }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+        transition={{ duration: reducedMotion ? 0 : 0.2 }}
       />
     </div>
   );

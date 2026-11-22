@@ -15,10 +15,10 @@ export function UploadTray() {
   if (!items.length || onEditor) return null;
 
   return (
-    <div className="card fixed bottom-4 end-4 z-40 w-[min(380px,calc(100vw-2rem))] overflow-hidden">
-      <button onClick={() => setCollapsed((c) => !c)} className="flex w-full items-center justify-between gap-2 bg-plum px-4 py-3 text-sm text-white">
+    <div className="card shadow-elevated fixed bottom-[max(1rem,env(safe-area-inset-bottom))] end-4 z-40 w-[min(380px,calc(100vw-2rem))] overflow-hidden">
+      <button onClick={() => setCollapsed((c) => !c)} aria-expanded={!collapsed} className="focus-ring flex min-h-12 w-full items-center justify-between gap-2 bg-sidebar px-4 py-3 text-sm text-sidebar-label">
         <span className="flex items-center gap-2">
-          <UploadCloud className="h-4 w-4 text-blush-300" />
+          <UploadCloud className="h-4 w-4 text-sidebar-label" />
           {t('videos.uploadsInProgress')} ({active})
         </span>
         {collapsed ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -29,7 +29,7 @@ export function UploadTray() {
             <UploadRow key={i.id} item={i} />
           ))}
           {items.length > active && (
-            <button onClick={clearFinished} className="w-full pt-1 text-center text-xs text-muted hover:text-plum">
+            <button onClick={clearFinished} className="focus-ring min-h-11 w-full rounded-lg text-center text-footnote text-accent hover:bg-accent-soft">
               {t('common.close')}
             </button>
           )}

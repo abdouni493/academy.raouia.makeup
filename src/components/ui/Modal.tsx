@@ -1,7 +1,9 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useDragControls, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { softSpring } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 function useIsMobile() {
@@ -31,70 +33,121 @@ export function Modal({
   footer?: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }) {
+  const { t } = useTranslation();
   const mobile = useIsMobile();
+  const dragControls = useDragControls();
+  const reduceMotion = useReducedMotion();
+  const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKey);
-    const prev = document.body.style.overflow;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
+    const appRoot = document.getElementById('root');
+    const previousInert = appRoot?.inert ?? false;
+    if (appRoot) appRoot.inert = true;
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prev;
+    const focusFrame = requestAnimationFrame(() => panelRef.current?.focus({ preventScroll: true }));
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeRef.current();
+      }
+      if (e.key !== 'Tab') return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusable = Array.from(panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )).filter((element) => element.getClientRects().length > 0 && element.tabIndex >= 0);
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first) {
+        e.preventDefault();
+        panel.focus();
+      } else if (e.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-  }, [open, onClose]);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(focusFrame);
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previousOverflow;
+      if (appRoot) appRoot.inert = previousInert;
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, [open]);
 
   const widths = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' };
-  const panel = mobile
-    ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
-    : {
-        initial: { opacity: 0, scale: 0.94, y: 16, filter: 'blur(4px)' },
-        animate: { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' },
-        exit: { opacity: 0, scale: 0.97, y: 8, filter: 'blur(2px)' },
-      };
+  const panel = reduceMotion
+    ? { initial: { opacity: 1 }, animate: { opacity: 1 }, exit: { opacity: 1 } }
+    : mobile
+      ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
+      : {
+          initial: { opacity: 0, scale: 0.98, y: 8 },
+          animate: { opacity: 1, scale: 1, y: 0 },
+          exit: { opacity: 0, scale: 0.98, y: 8 },
+        };
 
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-6">
           <motion.div
-            className="absolute inset-0 bg-plum/40 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
+            className="absolute inset-0 bg-scrim/45"
+            aria-hidden="true"
+            initial={{ opacity: reduceMotion ? 1 : 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: reduceMotion ? 1 : 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.18 }}
             onClick={onClose}
           />
           <motion.div
             {...panel}
-            transition={{ type: 'spring', stiffness: 340, damping: 32 }}
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            tabIndex={-1}
+            transition={reduceMotion ? { duration: 0 } : softSpring}
             drag={mobile ? 'y' : false}
+            dragControls={dragControls}
+            dragListener={false}
             dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.5 }}
+            dragElastic={{ top: 0, bottom: 0.35 }}
             onDragEnd={(_, info) => {
               if (info.offset.y > 120 || info.velocity.y > 600) onClose();
             }}
-            className={cn('relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-2xl', widths[size])}
+            className={cn('material relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-sheet shadow-sheet outline-none sm:rounded-sheet', widths[size])}
           >
-            {mobile && <div className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-blush-200" />}
-            <div className="flex items-center justify-between gap-4 border-b border-blush-100 px-6 py-4">
-              <h2 className="text-xl font-semibold">{title}</h2>
-              <motion.button
-                whileHover={{ rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            {mobile && (
+              <div aria-hidden="true" onPointerDown={(event) => dragControls.start(event)} className="flex h-9 w-full shrink-0 touch-none items-center justify-center">
+                <span className="h-1 w-10 rounded-full bg-label-tertiary/50" />
+              </div>
+            )}
+            <div className="flex items-center gap-3 border-b border-separator px-4 py-3 sm:px-6">
+              <button
+                type="button"
                 onClick={onClose}
-                className="focus-ring rounded-lg p-1.5 text-muted transition-colors hover:bg-blush-50 hover:text-plum"
-                aria-label="Close"
+                className="focus-ring press-feedback inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fill-secondary text-label-secondary hover:bg-fill hover:text-label"
+                aria-label={t('common.close')}
               >
-                <X className="h-5 w-5" />
-              </motion.button>
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <h2 id={titleId} className="min-w-0 text-headline">{title}</h2>
             </div>
-            <div className="scrollbar-thin flex-1 overflow-y-auto px-6 py-5" onPointerDown={(e) => e.stopPropagation()}>
+            <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6" onPointerDown={(e) => e.stopPropagation()}>
               {children}
             </div>
-            {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-blush-100 bg-blush-50/50 px-6 py-4">{footer}</div>}
+            {footer && <div className="flex flex-wrap justify-end gap-3 border-t border-separator px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">{footer}</div>}
+            {!footer && <div className="h-[env(safe-area-inset-bottom)] shrink-0" />}
           </motion.div>
         </div>
       )}

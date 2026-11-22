@@ -178,22 +178,22 @@ export function ClientDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link to="/admin/clients" className="inline-flex items-center gap-1 text-sm text-muted hover:text-plum">
+      <Link to="/admin/clients" className="focus-ring inline-flex min-h-11 items-center gap-1 rounded-lg text-subhead text-accent hover:underline">
         <ChevronLeft className="rtl-flip h-4 w-4" /> {t('clients.title')}
       </Link>
 
       <Card className="relative overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-24 bg-blush-gradient" />
-        <div className="relative flex flex-col gap-5 p-6 pt-10 sm:flex-row sm:items-end">
-          <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-3xl font-semibold text-white shadow-glow">
+        <div className="relative flex flex-col gap-6 p-6 pt-10 xl:flex-row xl:items-end">
+          <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-title-1 text-accent-contrast shadow-soft">
             {(client.full_name || client.email || '?').slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold">{client.full_name || '—'}</h1>
+              <h1 className="text-title-2">{client.full_name || '—'}</h1>
               {client.is_active ? <Badge tone="green">{t('common.active')}</Badge> : <Badge tone="red">{t('clients.suspended')}</Badge>}
             </div>
-            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted">
+            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-label-secondary">
               <span className="flex items-center gap-1.5" dir="ltr">
                 <Mail className="h-4 w-4" /> {client.email}
               </span>
@@ -206,7 +206,7 @@ export function ClientDetailPage() {
                 {t('clients.joined')} {formatDate(client.created_at, locale)}
               </span>
             </div>
-            {client.notes && <p className="mt-3 whitespace-pre-line rounded-xl bg-champagne/50 p-3 text-sm text-plum">{client.notes}</p>}
+            {client.notes && <p className="mt-3 whitespace-pre-line rounded-xl bg-champagne/50 p-3 text-sm text-label">{client.notes}</p>}
           </div>
           <div className="flex flex-wrap gap-2">
             {client.phone && (
@@ -235,7 +235,7 @@ export function ClientDetailPage() {
       <div className="grid gap-6 xl:grid-cols-2">
         <Card>
           <CardHeader icon={<Unlock className="h-5 w-5" />} title={t('clients.access')} />
-          <form onSubmit={grant} className="grid gap-3 border-b border-blush-100 p-5 sm:grid-cols-[130px_1fr]">
+          <form onSubmit={grant} className="grid gap-3 border-b border-separator/60 p-6 sm:grid-cols-[130px_1fr]">
             <Field label={t('clients.type')}>
               <Select
                 value={type}
@@ -267,23 +267,23 @@ export function ClientDetailPage() {
               </div>
             </Field>
           </form>
-          <div className="divide-y divide-blush-100">
-            {(grantsQ.data ?? []).length === 0 && <p className="p-6 text-center text-sm text-muted">{t('clients.noGrants')}</p>}
+          <div className="divide-y divide-separator/60">
+            {(grantsQ.data ?? []).length === 0 && <p className="p-6 text-center text-sm text-label-secondary">{t('clients.noGrants')}</p>}
             {(grantsQ.data ?? []).map((g) => {
               const expired = isExpired(g.expires_at);
               return (
-                <div key={g.id} className="flex items-center gap-3 px-5 py-3.5">
-                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${g.pack_id ? 'bg-plum text-champagne' : 'bg-blush-100 text-blush-600'}`}>
+                <div key={g.id} className="flex items-center gap-3 px-6 py-3.5">
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${g.pack_id ? 'bg-champagne text-rosegold' : 'bg-accent-soft text-accent'}`}>
                     {g.pack_id ? <Crown className="h-4 w-4" /> : <Video className="h-4 w-4" />}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-plum">{g.packs?.title ?? g.formations?.title ?? '—'}</div>
-                    <div className="text-xs text-muted">
+                    <div className="truncate text-sm font-medium text-label">{g.packs?.title ?? g.formations?.title ?? '—'}</div>
+                    <div className="text-xs text-label-secondary">
                       {g.expires_at ? `${t('clients.expiresAt')} ${formatDate(g.expires_at, locale)}` : t('clients.noExpiry')}
                     </div>
                   </div>
                   {expired && <Badge tone="red">{t('clients.expired')}</Badge>}
-                  <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50" onClick={() => setRevoking(g)}>
+                  <Button size="sm" variant="ghost" className="text-danger hover:bg-danger-soft" onClick={() => setRevoking(g)}>
                     {t('clients.revoke')}
                   </Button>
                 </div>
@@ -294,18 +294,18 @@ export function ClientDetailPage() {
 
         <Card>
           <CardHeader icon={<BarChart3 className="h-5 w-5" />} title={t('clients.progress')} />
-          <div className="divide-y divide-blush-100">
-            {progressRows.length === 0 && <p className="p-6 text-center text-sm text-muted">{t('clients.noProgress')}</p>}
+          <div className="divide-y divide-separator/60">
+            {progressRows.length === 0 && <p className="p-6 text-center text-sm text-label-secondary">{t('clients.noProgress')}</p>}
             {progressRows.map((r) => (
-              <div key={r.id} className="px-5 py-4">
+              <div key={r.id} className="px-6 py-4">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="truncate text-sm font-medium text-plum">{r.title}</span>
-                  <span className="shrink-0 text-xs tabular-nums text-muted">
+                  <span className="truncate text-sm font-medium text-label">{r.title}</span>
+                  <span className="shrink-0 text-xs tabular-nums text-label-secondary">
                     {r.done}/{r.total} · {r.pct}%
                   </span>
                 </div>
                 <ProgressBar value={r.pct} className="mt-2" />
-                {r.last && <div className="mt-1.5 text-[11px] text-muted">{formatDate(r.last, locale)}</div>}
+                {r.last && <div className="mt-1.5 text-caption text-label-secondary">{formatDate(r.last, locale)}</div>}
               </div>
             ))}
           </div>

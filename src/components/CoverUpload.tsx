@@ -24,10 +24,10 @@ export function CoverUpload({ value, onChange, folder }: { value: string | null;
   };
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <span className="block text-sm font-medium text-plum">{t('formations.cover')}</span>
       <div
-        className="group relative flex aspect-[16/9] w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-blush-200 bg-blush-50 transition hover:border-blush-400"
+        className="group relative flex aspect-[16/9] w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl border border-dashed border-control-border bg-surface-tertiary transition hover:border-blush-400"
         onClick={() => input.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
@@ -38,11 +38,12 @@ export function CoverUpload({ value, onChange, folder }: { value: string | null;
         {value ? (
           <>
             <img src={value} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-plum/50 opacity-0 transition group-hover:opacity-100">
-              <span className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-plum">{t('formations.changeCover')}</span>
+            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-scrim/50 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+              <span className="rounded-lg bg-surface-secondary px-3 py-1.5 text-xs font-medium text-plum">{t('formations.changeCover')}</span>
               <button
                 type="button"
-                className="rounded-lg bg-white p-1.5 text-red-500"
+                aria-label={t('common.delete')}
+                className="focus-ring flex h-11 w-11 items-center justify-center rounded-full bg-surface-secondary text-danger"
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange(null);
@@ -59,7 +60,7 @@ export function CoverUpload({ value, onChange, folder }: { value: string | null;
           </div>
         )}
         {busy && value && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-secondary/60">
             <Loader2 className="h-7 w-7 animate-spin text-blush-500" />
           </div>
         )}

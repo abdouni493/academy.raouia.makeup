@@ -139,7 +139,7 @@ export function VideoPlayer({ videoId, watermark, startAt = 0, onProgress, onEnd
     <div
       ref={wrapper}
       className={cn(
-        'relative w-full overflow-hidden bg-plum-dark shadow-soft',
+        'relative w-full overflow-hidden bg-surface-inverse shadow-soft',
         pseudoFs ? 'fixed inset-0 z-[60] flex items-center' : fullscreen ? 'flex items-center' : 'aspect-video rounded-2xl',
       )}
       onContextMenu={(e) => e.preventDefault()}
@@ -160,7 +160,7 @@ export function VideoPlayer({ videoId, watermark, startAt = 0, onProgress, onEnd
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-white/90">
             <AlertCircle className="h-8 w-8 text-blush-300" />
             <p className="text-sm">{t('formation.playerError')}</p>
-            <p className="text-xs text-white/60">{error}</p>
+            <p className="text-xs text-white/80">{error}</p>
             <Button size="sm" variant="secondary" onClick={() => void fetchUrl()}>
               {t('common.retry')}
             </Button>
@@ -184,7 +184,7 @@ export function VideoPlayer({ videoId, watermark, startAt = 0, onProgress, onEnd
       {embed && (
         <button
           onClick={() => void toggleFullscreen()}
-          className="absolute end-2 top-2 z-10 rounded-lg bg-black/35 p-2 text-white/90 backdrop-blur transition hover:bg-black/55"
+          className="focus-ring absolute end-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-scrim/70 text-white backdrop-blur-md transition hover:bg-scrim/90"
           aria-label="Fullscreen"
         >
           {fullscreen || pseudoFs ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}

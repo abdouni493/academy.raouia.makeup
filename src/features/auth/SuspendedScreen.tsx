@@ -12,11 +12,11 @@ export function SuspendedScreen() {
     <div className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-blush-gradient px-6 text-center">
       <Logo />
       <div className="card max-w-md p-8">
-        <span className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-blush-100 text-blush-600">
+        <span className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-accent-soft text-accent">
           <ShieldOff className="h-7 w-7" />
         </span>
-        <h1 className="text-2xl font-semibold">{t('auth.suspendedTitle')}</h1>
-        <p className="mt-3 text-muted">{t('auth.suspendedText')}</p>
+        <h1 className="text-title-2">{t('auth.suspendedTitle')}</h1>
+        <p className="mt-3 text-label-secondary">{t('auth.suspendedText')}</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <a href={whatsappLink('')} target="_blank" rel="noreferrer">
             <Button icon={<MessageCircle className="h-4 w-4" />} className="w-full">

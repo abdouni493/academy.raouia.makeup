@@ -1,51 +1,36 @@
 import type { ReactNode } from 'react';
-import { Brush, Gem, Palette, Sparkles } from 'lucide-react';
+import { Brush, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Logo } from '@/components/Logo';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
-/** Split-screen frame used by the login & reset pages. */
+/** A quiet brand canvas beside a focused, inset authentication surface. */
 export function AuthShell({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   return (
-    <div className="grid min-h-dvh bg-white lg:grid-cols-2">
-      <aside className="relative hidden overflow-hidden bg-blush-gradient lg:flex lg:flex-col lg:justify-between lg:p-12">
-        {/* Abstract decorative shapes */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -start-24 -top-24 h-96 w-96 rounded-full bg-blush-200/70 blur-3xl" />
-          <div className="absolute -bottom-32 -end-16 h-[28rem] w-[28rem] rounded-full bg-champagne blur-3xl" />
-          <div className="absolute end-20 top-28 h-44 w-44 animate-float rounded-[42%_58%_63%_37%/41%_44%_56%_59%] bg-gradient-to-br from-blush-300 to-rosegold opacity-80 shadow-glow" />
-          <div
-            className="absolute bottom-44 start-24 h-28 w-28 animate-float rounded-full border-[10px] border-rosegold-light/80"
-            style={{ animationDelay: '-2.5s' }}
-          />
-          <div className="absolute end-10 top-[45%] h-16 w-16 animate-float rounded-2xl bg-white/70 shadow-soft" style={{ animationDelay: '-4s', rotate: '18deg' }} />
-          <svg className="absolute bottom-0 start-0 w-full text-white/50" viewBox="0 0 600 200" preserveAspectRatio="none" aria-hidden>
-            <path d="M0 120 C 150 40, 300 200, 600 90 L600 200 L0 200 Z" fill="currentColor" />
-          </svg>
-        </div>
-
-        <Logo className="relative" />
-        <div className="relative max-w-md">
-          <div className="mb-6 flex gap-3 text-rosegold">
-            {[Brush, Palette, Gem, Sparkles].map((Icon, i) => (
-              <span key={i} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/70 shadow-soft backdrop-blur">
-                <Icon className="h-5 w-5" />
-              </span>
-            ))}
+    <div className="grid min-h-dvh bg-surface lg:grid-cols-2">
+      <aside className="relative hidden flex-col justify-between overflow-hidden border-e border-separator/60 bg-blush-gradient p-12 lg:flex xl:p-16">
+        <Logo />
+        <div className="py-12">
+          <div className="relative mb-12 flex h-48 items-end gap-4" aria-hidden="true">
+            <div className="flex h-48 w-32 items-center justify-center rounded-t-full rounded-b-3xl border border-rosegold/20 bg-surface-secondary/60">
+              <Brush className="h-16 w-16 text-rosegold" strokeWidth={1} />
+            </div>
+            <div className="h-36 w-16 rounded-full bg-brand-gradient" />
+            <div className="h-24 w-16 rounded-full bg-rosegold-light" />
+            <Sparkles className="absolute start-52 top-0 h-6 w-6 text-rosegold" />
           </div>
-          <h2 className="text-4xl font-semibold leading-tight xl:text-5xl">{t('auth.tagline')}</h2>
-          <p className="mt-4 text-lg text-muted">{t('auth.taglineSub')}</p>
+          <h2 className="max-w-lg font-brand text-4xl font-medium leading-tight xl:text-5xl">{t('auth.tagline')}</h2>
+          <p className="mt-6 max-w-md text-body text-label-secondary">{t('auth.taglineSub')}</p>
         </div>
-        <div className="relative text-xs text-muted">© {new Date().getFullYear()}</div>
+        <div className="text-footnote text-label-secondary">© {new Date().getFullYear()}</div>
       </aside>
-
-      <section className="relative flex flex-col px-6 py-8 sm:px-12">
-        <div className="flex items-center justify-between">
-          <Logo className="lg:invisible" />
+      <section className="relative flex min-w-0 flex-col px-6 py-6 sm:px-12 lg:px-8 xl:px-16">
+        <div className="flex flex-wrap items-center justify-between gap-4 lg:justify-end">
+          <Logo className="lg:hidden" />
           <LanguageSwitcher />
         </div>
-        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">{children}</div>
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-12 sm:py-16">{children}</div>
       </section>
     </div>
   );

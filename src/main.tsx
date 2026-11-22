@@ -6,6 +6,7 @@ import { Toaster } from 'sonner';
 import { MotionConfig } from 'framer-motion';
 import './i18n';
 import './index.css';
+import './lib/theme';
 import App from './App';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { UploadProvider } from '@/features/admin/uploads/UploadProvider';
@@ -24,7 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <AuthProvider>
           <UploadProvider>
             <App />
-            <Toaster position="top-center" richColors closeButton toastOptions={{ className: 'font-sans' }} />
+            <Toaster theme="system" position="top-center" richColors closeButton toastOptions={{ className: 'font-sans' }} />
           </UploadProvider>
         </AuthProvider>
         </MotionConfig>

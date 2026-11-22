@@ -52,8 +52,8 @@ export function CredentialsModal({
         </>
       }
     >
-      <p className="mb-4 rounded-xl bg-champagne/70 p-3 text-sm text-plum">{t('clients.credentialsHint')}</p>
-      <pre className="whitespace-pre-wrap rounded-xl bg-blush-50 p-4 font-sans text-sm text-ink" dir="auto">
+      <p className="mb-4 rounded-xl bg-champagne/70 p-3 text-sm text-label">{t('clients.credentialsHint')}</p>
+      <pre className="whitespace-pre-wrap rounded-xl bg-surface-tertiary p-4 font-sans text-sm text-label" dir="auto">
         {text}
       </pre>
     </Modal>
@@ -158,7 +158,7 @@ export function ClientFormModal({
         </>
       }
     >
-      <form className="grid gap-5 sm:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
+      <form className="grid gap-6 sm:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
         <Field label={t('clients.fullName')} error={formState.errors.full_name && t('common.required')} className="sm:col-span-2">
           <Input {...register('full_name')} invalid={!!formState.errors.full_name} />
         </Field>
@@ -231,7 +231,7 @@ export function ResetPasswordModal({
         </>
       }
     >
-      <p className="mb-4 text-sm text-muted">{client?.email}</p>
+      <p className="mb-4 text-sm text-label-secondary">{client?.email}</p>
       <PasswordInput value={password} onChange={setPassword} />
     </Modal>
   );

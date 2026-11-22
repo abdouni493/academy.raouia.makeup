@@ -1,12 +1,14 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { createContext, forwardRef, useContext, useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
+const FieldContext = createContext<{ descriptionId?: string; invalid?: boolean }>({});
 const base =
-  'w-full rounded-xl border border-blush-200 bg-white/80 px-4 text-sm text-ink placeholder:text-muted/70 transition focus:border-blush-400 focus:outline-none focus:ring-4 focus:ring-blush-100 disabled:opacity-60';
+  'w-full min-w-0 rounded-xl border border-control-border bg-surface-tertiary/60 px-4 text-callout text-label placeholder:text-label-tertiary transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }>(
   function Input({ className, invalid, ...rest }, ref) {
-    return <input ref={ref} className={cn(base, 'h-11', invalid && 'border-red-300 focus:ring-red-100', className)} {...rest} />;
+    const field = useContext(FieldContext);
+    return <input ref={ref} aria-invalid={invalid || field.invalid || undefined} aria-describedby={field.descriptionId} className={cn(base, 'min-h-12 py-3', invalid && 'border-danger focus:border-danger focus:ring-danger', className)} {...rest} />;
   },
 );
 
@@ -14,15 +16,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
   { className, rows = 4, ...rest },
   ref,
 ) {
-  return <textarea ref={ref} rows={rows} className={cn(base, 'py-3 leading-relaxed', className)} {...rest} />;
+  const field = useContext(FieldContext);
+  return <textarea ref={ref} rows={rows} aria-invalid={field.invalid || undefined} aria-describedby={field.descriptionId} className={cn(base, 'py-3 leading-relaxed', className)} {...rest} />;
 });
 
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(function Select(
   { className, children, ...rest },
   ref,
 ) {
+  const field = useContext(FieldContext);
   return (
-    <select ref={ref} className={cn(base, 'h-11 appearance-none bg-[length:16px] pe-10', className)} {...rest}>
+    <select ref={ref} aria-invalid={field.invalid || undefined} aria-describedby={field.descriptionId} className={cn(base, 'min-h-12 appearance-auto py-3 pe-8', className)} {...rest}>
       {children}
     </select>
   );
@@ -41,12 +45,15 @@ export function Field({
   children: ReactNode;
   className?: string;
 }) {
+  const descriptionId = useId();
   return (
-    <label className={cn('block space-y-1.5', className)}>
-      {label && <span className="block text-sm font-medium text-plum">{label}</span>}
-      {children}
-      {error ? <span className="block text-xs text-red-600">{error}</span> : hint ? <span className="block text-xs text-muted">{hint}</span> : null}
-    </label>
+    <FieldContext.Provider value={{ descriptionId: error || hint ? descriptionId : undefined, invalid: !!error }}>
+      <label className={cn('block space-y-2', className)}>
+        {label && <span className="block text-subhead font-medium text-label">{label}</span>}
+        {children}
+        {error ? <span id={descriptionId} role="alert" className="block text-footnote text-danger">{error}</span> : hint ? <span id={descriptionId} className="block text-footnote text-label-secondary">{hint}</span> : null}
+      </label>
+    </FieldContext.Provider>
   );
 }
 
@@ -68,22 +75,23 @@ export function Switch({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="focus-ring group inline-flex items-center gap-3 rounded-full disabled:opacity-50"
+      className="focus-ring group inline-flex min-h-11 items-center gap-3 rounded-xl text-start disabled:opacity-50"
     >
       <span
+        aria-hidden="true"
         className={cn(
-          'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',
-          checked ? 'bg-brand-gradient' : 'bg-nude',
+          'relative inline-flex h-8 w-[52px] shrink-0 items-center rounded-full border transition-colors duration-150',
+          checked ? 'border-accent bg-accent' : 'border-control-border bg-fill',
         )}
       >
         <span
           className={cn(
-            'absolute h-5 w-5 rounded-full bg-white shadow transition-all',
+            'absolute h-[26px] w-[26px] rounded-full bg-surface-secondary shadow-soft transition-[inset-inline-start] duration-200',
             checked ? 'start-[22px]' : 'start-0.5',
           )}
         />
       </span>
-      {label && <span className="text-sm text-plum">{label}</span>}
+      {label && <span className="text-subhead text-label">{label}</span>}
     </button>
   );
 }

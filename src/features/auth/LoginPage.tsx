@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Lock, Mail, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button, Field, Input } from '@/components/ui';
@@ -35,6 +35,7 @@ function homeFor(isAdmin: boolean, from?: string): string {
 }
 
 export function LoginPage() {
+  const reducedMotion = useReducedMotion();
   const { t } = useTranslation();
   const { session, profile, loading } = useAuth();
   const location = useLocation();
@@ -75,10 +76,10 @@ export function LoginPage() {
       {mode === 'setup' && showSetup ? (
         <motion.div
           key="setup"
-          initial={{ opacity: 0, x: 24, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, x: -24, filter: 'blur(4px)' }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: reducedMotion ? 1 : 0 }}
+          transition={{ duration: reducedMotion ? 0 : 0.16 }}
         >
         <AdminSetupForm
           onBack={() => setMode('login')}
@@ -90,23 +91,23 @@ export function LoginPage() {
       ) : (
         <motion.div
           key="login"
-          initial={{ opacity: 0, x: -24, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, x: 24, filter: 'blur(4px)' }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: reducedMotion ? 1 : 0 }}
+          transition={{ duration: reducedMotion ? 0 : 0.16 }}
         >
-          <h1 className="text-3xl font-semibold sm:text-4xl">{t('auth.welcomeBack')}</h1>
-          <p className="mt-2 text-muted">{t('auth.subtitle')}</p>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5" noValidate>
+          <h1 className="text-large-title">{t('auth.welcomeBack')}</h1>
+          <p className="mt-2 text-label-secondary">{t('auth.subtitle')}</p>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6" noValidate>
             <Field label={t('auth.email')} error={formState.errors.email && t('common.invalidEmail')}>
               <div className="relative">
-                <Mail className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                <Mail className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-label-secondary" />
                 <Input type="email" autoComplete="email" className="ps-11" invalid={!!formState.errors.email} {...register('email')} />
               </div>
             </Field>
             <Field label={t('auth.password')} error={formState.errors.password && t('common.required')}>
               <div className="relative">
-                <Lock className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                <Lock className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-label-secondary" />
                 <Input
                   type="password"
                   autoComplete="current-password"
@@ -116,7 +117,7 @@ export function LoginPage() {
                 />
               </div>
             </Field>
-            {authError && <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{authError}</div>}
+            {authError && <div className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">{authError}</div>}
             <Button type="submit" size="lg" className="w-full" loading={formState.isSubmitting}>
               {t('auth.signIn')}
             </Button>
@@ -124,10 +125,10 @@ export function LoginPage() {
 
           {showSetup && (
             <>
-              <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-widest text-muted">
-                <span className="h-px flex-1 bg-blush-100" />
+              <div className="my-8 flex items-center gap-4 text-footnote text-label-secondary">
+                <span className="h-px flex-1 bg-separator" />
                 {t('auth.or')}
-                <span className="h-px flex-1 bg-blush-100" />
+                <span className="h-px flex-1 bg-separator" />
               </div>
               <Button
                 variant="secondary"

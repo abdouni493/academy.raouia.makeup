@@ -52,14 +52,14 @@ export function UploadZone({ formationId, sections }: { formationId: string; sec
         }}
         className={cn(
           'focus-ring flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition',
-          over ? 'scale-[1.01] border-blush-500 bg-blush-100' : 'border-blush-200 bg-blush-50/60 hover:border-blush-400 hover:bg-blush-50',
+          over ? 'border-accent bg-accent-soft' : 'border-control-border bg-surface-tertiary hover:border-accent hover:bg-fill-secondary',
         )}
       >
-        <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-glow">
+        <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent">
           <UploadCloud className="h-6 w-6" />
         </span>
-        <div className="font-semibold text-plum">{t('videos.dropzone')}</div>
-        <div className="mt-1 text-xs text-muted">{t('videos.dropHint')}</div>
+        <div className="font-semibold text-label">{t('videos.dropzone')}</div>
+        <div className="mt-1 text-xs text-label-secondary">{t('videos.dropHint')}</div>
         <input ref={input} type="file" accept="video/*" multiple hidden onChange={(e) => add(e.target.files)} />
       </div>
       {mine.length > 0 && (
@@ -68,7 +68,7 @@ export function UploadZone({ formationId, sections }: { formationId: string; sec
             <UploadRow key={i.id} item={i} />
           ))}
           {mine.some((i) => ['done', 'error', 'cancelled'].includes(i.state)) && (
-            <button onClick={clearFinished} className="text-xs text-muted hover:text-plum">
+            <button onClick={clearFinished} className="focus-ring min-h-11 rounded-lg px-3 text-footnote text-accent hover:bg-accent-soft">
               {t('common.close')}
             </button>
           )}

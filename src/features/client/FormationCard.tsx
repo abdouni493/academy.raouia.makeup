@@ -15,12 +15,12 @@ export function FormationCard({ entry, progress, requestMessage }: { entry: Cata
     <>
       <div className="relative aspect-[16/10] overflow-hidden">
         <CoverImage src={entry.cover_url} alt={entry.title} seed={entry.id} />
-        <div className="absolute inset-0 bg-gradient-to-t from-plum/50 via-transparent to-transparent" />
-        <LevelBadge level={entry.level} className="absolute start-3 top-3 shadow-sm" />
-        <span className="absolute end-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-blush-600 shadow-sm backdrop-blur">
+        <div className="absolute inset-0 bg-gradient-to-t from-surface-inverse/80 via-transparent to-transparent" />
+        <LevelBadge level={entry.level} className="absolute start-4 top-4 shadow-sm" />
+        <span className="absolute end-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-surface-secondary/95 text-accent shadow-soft">
           {locked ? <Lock className="h-4 w-4" /> : <PlayCircle className="h-5 w-5" />}
         </span>
-        <div className="absolute bottom-3 start-3 flex items-center gap-3 text-xs font-medium text-white">
+        <div className="absolute bottom-4 start-4 flex items-center gap-3 text-xs font-medium text-white">
           <span>{t('client.videosCount', { count: entry.video_count })}</span>
           {entry.total_seconds > 0 && (
             <span className="flex items-center gap-1">
@@ -29,14 +29,14 @@ export function FormationCard({ entry, progress, requestMessage }: { entry: Cata
           )}
         </div>
       </div>
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-lg font-semibold leading-snug group-hover:text-blush-600">{entry.title}</h3>
-        {entry.short_description && <p className="mt-1.5 line-clamp-2 text-sm text-muted">{entry.short_description}</p>}
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="text-headline leading-snug group-hover:text-accent">{entry.title}</h3>
+        {entry.short_description && <p className="mt-2 line-clamp-2 text-sm text-label-secondary">{entry.short_description}</p>}
         <div className="mt-auto pt-4">
           {progress !== undefined && !locked && (
             <>
               <ProgressBar value={progress} />
-              <div className="mt-2 text-xs text-muted">{t('client.completedPct', { pct: progress })}</div>
+              <div className="mt-2 text-xs text-label-secondary">{t('client.completedPct', { pct: progress })}</div>
             </>
           )}
           {locked && requestMessage && (
@@ -62,7 +62,7 @@ export function FormationCard({ entry, progress, requestMessage }: { entry: Cata
   return (
     <Link
       to={`/formation/${entry.slug}`}
-      className="card group flex h-full flex-col overflow-hidden transition-shadow duration-300 hover:shadow-glow"
+      className="card group flex h-full flex-col overflow-hidden focus-ring transition-shadow duration-150 hover:shadow-elevated"
     >
       {body}
     </Link>

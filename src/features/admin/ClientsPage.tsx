@@ -82,17 +82,18 @@ export function ClientsPage() {
           </Button>
         }
       />
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full max-w-sm">
-          <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-label-secondary" />
           <Input className="ps-11" placeholder={t('common.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <div className="inline-flex rounded-xl bg-white p-1 ring-1 ring-blush-100">
+        <div className="inline-flex max-w-full flex-wrap rounded-xl bg-fill-secondary p-1">
           {(['all', 'active', 'inactive'] as Filter[]).map((f) => (
             <button
               key={f}
+              aria-pressed={filter === f}
               onClick={() => setFilter(f)}
-              className={cn('rounded-lg px-4 py-2 text-sm font-medium transition', filter === f ? 'bg-brand-gradient text-white shadow' : 'text-muted hover:text-plum')}
+              className={cn('focus-ring min-h-11 flex-1 rounded-lg px-4 py-2 text-subhead font-medium transition-colors', filter === f ? 'bg-surface-secondary text-accent shadow-soft' : 'text-label-secondary hover:text-label')}
             >
               {t(`common.${f}`)}
             </button>
@@ -105,7 +106,7 @@ export function ClientsPage() {
           <TableSkeleton />
         ) : !query.data?.length ? (
           <EmptyState
-            className="m-5"
+            className="m-6"
             icon={<Users />}
             title={t('clients.empty')}
             text={t('clients.emptyText')}
@@ -126,7 +127,7 @@ export function ClientsPage() {
             <tbody>
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center text-sm text-muted">
+                  <td colSpan={6} className="p-6 text-center text-sm text-label-secondary">
                     {t('common.noResults')}
                   </td>
                 </tr>
@@ -135,22 +136,22 @@ export function ClientsPage() {
                 <Tr key={c.id}>
                   <Td>
                     <Link to={`/admin/clients/${c.id}`} className="flex items-center gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blush-100 text-sm font-semibold text-blush-700">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent">
                         {(c.full_name || c.email || '?').slice(0, 1).toUpperCase()}
                       </span>
                       <span className="min-w-0">
-                        <span className="block truncate font-medium text-plum hover:text-blush-600">{c.full_name || '—'}</span>
-                        <span className="block truncate text-xs text-muted">{c.email}</span>
+                        <span className="block truncate font-medium text-label hover:text-accent">{c.full_name || '—'}</span>
+                        <span className="block truncate text-xs text-label-secondary">{c.email}</span>
                       </span>
                     </Link>
                   </Td>
-                  <Td className="text-muted" dir="ltr">
+                  <Td className="text-label-secondary" dir="ltr">
                     {c.phone || '—'}
                   </Td>
                   <Td>
                     <Badge tone="rose">{c.access_grants?.[0]?.count ?? 0}</Badge>
                   </Td>
-                  <Td className="whitespace-nowrap text-muted">{formatDate(c.created_at, locale)}</Td>
+                  <Td className="whitespace-nowrap text-label-secondary">{formatDate(c.created_at, locale)}</Td>
                   <Td>{c.is_active ? <Badge tone="green">{t('common.active')}</Badge> : <Badge tone="red">{t('clients.suspended')}</Badge>}</Td>
                   <Td>
                     <div className="flex justify-end gap-0.5">
@@ -164,12 +165,12 @@ export function ClientsPage() {
                         size="icon"
                         variant="ghost"
                         title={c.is_active ? t('clients.deactivate') : t('clients.activate')}
-                        className={c.is_active ? 'text-amber-600' : 'text-emerald-600'}
+                        className={c.is_active ? 'text-warning' : 'text-success'}
                         onClick={() => void toggleActive(c)}
                       >
                         <Power className="h-4 w-4" />
                       </Button>
-                      <Button size="icon" variant="ghost" className="text-red-500 hover:bg-red-50" title={t('common.delete')} onClick={() => setDeleting(c)}>
+                      <Button size="icon" variant="ghost" className="text-danger hover:bg-danger-soft" title={t('common.delete')} onClick={() => setDeleting(c)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       <Link to={`/admin/clients/${c.id}`}>

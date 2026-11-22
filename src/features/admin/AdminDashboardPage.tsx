@@ -63,13 +63,12 @@ export function AdminDashboardPage() {
       <StaggerGroup className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         {cards.map((c, i) => (
           <StaggerItem key={c.label}>
-          <div className="card group relative h-full overflow-hidden p-5 transition-shadow hover:shadow-glow">
-            <div className="absolute -end-6 -top-6 h-20 w-20 rounded-full bg-blush-100 transition group-hover:scale-125" />
-            <span className={`relative mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${i % 2 ? 'bg-champagne text-rosegold' : 'bg-brand-gradient text-white'}`}>
+          <div className="card h-full p-4 sm:p-6">
+            <span className={`relative mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${i % 2 ? 'bg-champagne text-rosegold' : 'bg-accent-soft text-accent'}`}>
               <c.icon className="h-5 w-5" />
             </span>
-            {stats.isLoading ? <Skeleton className="h-8 w-16" /> : <div className="relative font-display text-3xl font-semibold text-plum">{c.value ?? 0}</div>}
-            <div className="relative mt-1 text-xs text-muted">{c.label}</div>
+            {stats.isLoading ? <Skeleton className="h-8 w-16" /> : <div className="font-sans text-title-1 tabular-nums text-label">{c.value ?? 0}</div>}
+            <div className="relative mt-1 text-xs text-label-secondary">{c.label}</div>
           </div>
           </StaggerItem>
         ))}
@@ -77,20 +76,20 @@ export function AdminDashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader icon={<Users className="h-5 w-5" />} title={t('admin.recentClients')} action={<Link to="/admin/clients" className="text-sm text-rosegold hover:text-blush-600">→</Link>} />
-          <div className="divide-y divide-blush-100">
-            {recent.isLoading && <Skeleton className="m-5 h-24" />}
-            {recent.data?.length === 0 && <p className="p-6 text-center text-sm text-muted">{t('clients.empty')}</p>}
+          <CardHeader icon={<Users className="h-5 w-5" />} title={t('admin.recentClients')} action={<Link to="/admin/clients" aria-label={t('clients.title')} className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full text-accent hover:bg-accent-soft"><span className="rtl-flip">→</span></Link>} />
+          <div className="divide-y divide-separator/60">
+            {recent.isLoading && <Skeleton className="m-6 h-24" />}
+            {recent.data?.length === 0 && <p className="p-6 text-center text-sm text-label-secondary">{t('clients.empty')}</p>}
             {recent.data?.map((c) => (
-              <Link key={c.id} to={`/admin/clients/${c.id}`} className="flex items-center gap-3 px-5 py-3 transition hover:bg-blush-50/60">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blush-100 text-sm font-semibold text-blush-700">
+              <Link key={c.id} to={`/admin/clients/${c.id}`} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-fill-secondary">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent">
                   {(c.full_name || c.email || '?').slice(0, 1).toUpperCase()}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium text-plum">{c.full_name || '—'}</div>
-                  <div className="truncate text-xs text-muted">{c.email}</div>
+                  <div className="truncate text-sm font-medium text-label">{c.full_name || '—'}</div>
+                  <div className="truncate text-xs text-label-secondary">{c.email}</div>
                 </div>
-                <span className="text-xs text-muted">{formatDate(c.created_at, locale)}</span>
+                <span className="text-xs text-label-secondary">{formatDate(c.created_at, locale)}</span>
                 {!c.is_active && <Badge tone="red">{t('clients.suspended')}</Badge>}
               </Link>
             ))}
@@ -99,18 +98,18 @@ export function AdminDashboardPage() {
 
         <Card>
           <CardHeader icon={<Video className="h-5 w-5" />} title={t('admin.videosAttention')} />
-          <div className="divide-y divide-blush-100">
-            {attention.isLoading && <Skeleton className="m-5 h-24" />}
+          <div className="divide-y divide-separator/60">
+            {attention.isLoading && <Skeleton className="m-6 h-24" />}
             {attention.data?.length === 0 && (
-              <p className="flex items-center justify-center gap-2 p-6 text-center text-sm text-muted">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" /> {t('admin.noAttention')}
+              <p className="flex items-center justify-center gap-2 p-6 text-center text-sm text-label-secondary">
+                <CheckCircle2 className="h-4 w-4 text-success" /> {t('admin.noAttention')}
               </p>
             )}
             {attention.data?.map((v) => (
-              <Link key={v.id} to={`/admin/formations/${v.formation_id}`} className="flex items-center gap-3 px-5 py-3 transition hover:bg-blush-50/60">
+              <Link key={v.id} to={`/admin/formations/${v.formation_id}`} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-fill-secondary">
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium text-plum">{v.title}</div>
-                  <div className="truncate text-xs text-muted">{v.formations?.title}</div>
+                  <div className="truncate text-sm font-medium text-label">{v.title}</div>
+                  <div className="truncate text-xs text-label-secondary">{v.formations?.title}</div>
                 </div>
                 <StatusBadge status={v.status} />
               </Link>

@@ -75,14 +75,14 @@ export function FormationsListPage() {
   };
 
   const renderRow = (f: Row, handle?: React.ReactNode) => (
-    <div className="card flex flex-col gap-4 p-3 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         {handle}
         <div className="group h-16 w-24 shrink-0 overflow-hidden rounded-xl">
           <CoverImage src={f.cover_url} alt={f.title} seed={f.id} />
         </div>
         <div className="min-w-0">
-          <Link to={`/admin/formations/${f.id}`} className="block truncate font-semibold text-plum hover:text-blush-600">
+          <Link to={`/admin/formations/${f.id}`} className="block truncate font-semibold text-label hover:text-accent">
             {f.title}
           </Link>
           <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -104,7 +104,7 @@ export function FormationsListPage() {
           <Button size="icon" variant="ghost" onClick={() => setEditing(f)} title={t('common.edit')}>
             <Pencil className="h-4 w-4" />
           </Button>
-          <Button size="icon" variant="ghost" className="text-red-500 hover:bg-red-50" onClick={() => setDeleting(f)} title={t('common.delete')}>
+          <Button size="icon" variant="ghost" className="text-danger hover:bg-danger-soft" onClick={() => setDeleting(f)} title={t('common.delete')}>
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -122,8 +122,8 @@ export function FormationsListPage() {
           </Button>
         }
       />
-      <div className="relative mb-5 max-w-sm">
-        <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+      <div className="relative mb-6 max-w-sm">
+        <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-label-secondary" />
         <Input className="ps-11" placeholder={t('common.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
@@ -139,11 +139,11 @@ export function FormationsListPage() {
           action={<Button onClick={() => setCreating(true)}>{t('formations.new')}</Button>}
         />
       ) : search ? (
-        <div className="space-y-3">{rows.length ? rows.map((f) => <div key={f.id}>{renderRow(f)}</div>) : <p className="text-sm text-muted">{t('common.noResults')}</p>}</div>
+        <div className="card divide-y divide-separator/60 overflow-hidden">{rows.length ? rows.map((f) => <div key={f.id}>{renderRow(f)}</div>) : <p className="text-sm text-label-secondary">{t('common.noResults')}</p>}</div>
       ) : (
         <>
-          <p className="mb-2 text-xs text-muted">{t('common.dragToReorder')}</p>
-          <SortableList items={rows} onReorder={(n) => void reorder(n)} className="space-y-3" renderItem={(f, handle) => renderRow(f, handle)} />
+          <p className="mb-2 text-xs text-label-secondary">{t('common.dragToReorder')}</p>
+          <SortableList items={rows} onReorder={(n) => void reorder(n)} className="card divide-y divide-separator/60 overflow-hidden" renderItem={(f, handle) => renderRow(f, handle)} />
         </>
       )}
 

@@ -13,7 +13,7 @@ import {
   MessageCircle,
   PlayCircle,
 } from 'lucide-react';
-import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { ease, spring } from '@/lib/motion';
 import { toast } from 'sonner';
@@ -37,6 +37,7 @@ interface Item {
 }
 
 export function FormationPage() {
+  const reducedMotion = useReducedMotion();
   const { slug } = useParams();
   const { t } = useTranslation();
   const { profile, session } = useAuth();
@@ -86,7 +87,7 @@ export function FormationPage() {
 
   const select = (id: string) => {
     setParams({ v: id }, { replace: false });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
   };
 
   useEffect(() => setTab('description'), [current?.id]);
@@ -171,9 +172,9 @@ export function FormationPage() {
 
   const renderLessonList = (scope: string) => (
     <div className="card overflow-hidden">
-      <div className="border-b border-blush-100 p-5">
-        <h2 className="text-lg font-semibold">{t('formation.content')}</h2>
-        <div className="mt-1 flex items-center gap-3 text-xs text-muted">
+      <div className="border-b border-separator/60 p-6">
+        <h2 className="text-headline">{t('formation.content')}</h2>
+        <div className="mt-1 flex items-center gap-3 text-xs text-label-secondary">
           <span>{t('formation.lessons', { count: flat.length })}</span>
           {totalSeconds > 0 && (
             <span className="flex items-center gap-1">
@@ -184,17 +185,17 @@ export function FormationPage() {
         {hasAccess && flat.length > 0 && (
           <div className="mt-3">
             <ProgressBar value={pct} />
-            <div className="mt-1.5 text-xs text-muted">{t('client.completedPct', { pct })}</div>
+            <div className="mt-1.5 text-xs text-label-secondary">{t('client.completedPct', { pct })}</div>
           </div>
         )}
       </div>
       {flat.length === 0 ? (
-        <p className="p-6 text-center text-sm text-muted">{t('formation.noVideos')}</p>
+        <p className="p-6 text-center text-sm text-label-secondary">{t('formation.noVideos')}</p>
       ) : (
         <div className="scrollbar-thin max-h-[70vh] overflow-y-auto">
           {groups.map((g, gi) => (
             <div key={g.id}>
-              <div className="sticky top-0 z-[1] bg-blush-50/95 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-rosegold backdrop-blur">
+              <div className="sticky top-0 z-[1] bg-surface-tertiary px-6 py-3 text-footnote font-semibold text-label-secondary">
                 {gi + 1}. {g.title}
               </div>
               {g.items.map((item) => {
@@ -205,36 +206,36 @@ export function FormationPage() {
                     key={item.id}
                     disabled={!item.playable}
                     onClick={() => select(item.id)}
-                    whileTap={item.playable ? { scale: 0.98 } : undefined}
+                    whileTap={item.playable && !reducedMotion ? { scale: 0.99 } : undefined}
                     className={cn(
-                      'relative flex w-full items-center gap-3 px-5 py-3 text-start transition-colors',
-                      !active && 'hover:bg-blush-50/60',
-                      !item.playable && 'cursor-not-allowed opacity-60',
+                      'focus-ring relative flex min-h-14 w-full items-center gap-3 border-b border-separator/40 px-6 py-4 text-start transition-colors',
+                      !active && 'hover:bg-fill-secondary',
+                      !item.playable && 'cursor-not-allowed',
                     )}
                   >
                     {active && (
                       <motion.span
-                        layoutId={`lesson-active-${scope}`}
-                        className="absolute inset-0 border-s-[3px] border-blush-500 bg-blush-50"
-                        transition={spring}
+                        layoutId={reducedMotion ? undefined : `lesson-active-${scope}`}
+                        className="absolute inset-0 border-s-2 border-accent bg-accent-soft"
+                        transition={reducedMotion ? { duration: 0 } : spring}
                       />
                     )}
                     <span className="relative flex shrink-0">
                     {!item.playable ? (
-                      <Lock className="h-4 w-4 shrink-0 text-muted" />
+                      <Lock className="h-4 w-4 shrink-0 text-label-secondary" />
                     ) : done ? (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
                     ) : active ? (
-                      <PlayCircle className="h-4 w-4 shrink-0 text-blush-500" />
+                      <PlayCircle className="h-4 w-4 shrink-0 text-accent" />
                     ) : (
-                      <Circle className="h-4 w-4 shrink-0 text-blush-200" />
+                      <Circle className="h-4 w-4 shrink-0 text-label-tertiary" />
                     )}
                     </span>
-                    <span className={cn('relative min-w-0 flex-1 text-sm', active ? 'font-semibold text-plum' : 'text-ink')}>
+                    <span className={cn('relative min-w-0 flex-1 text-sm', active ? 'font-semibold text-label' : 'text-label')}>
                       <span className="line-clamp-2">{item.title}</span>
-                      {item.is_free_preview && !hasAccess && <span className="mt-0.5 block text-[11px] text-rosegold">{t('formation.freePreview')}</span>}
+                      {item.is_free_preview && !hasAccess && <span className="mt-0.5 block text-caption text-label-secondary">{t('formation.freePreview')}</span>}
                     </span>
-                    <span className="relative shrink-0 text-xs tabular-nums text-muted" dir="ltr">
+                    <span className="relative shrink-0 text-xs tabular-nums text-label-secondary" dir="ltr">
                       {formatDuration(item.duration_seconds)}
                     </span>
                   </motion.button>
@@ -249,23 +250,23 @@ export function FormationPage() {
 
   return (
     <div>
-      <Link to={hasAccess ? '/' : '/catalog'} className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-plum">
+      <Link to={hasAccess ? '/' : '/catalog'} className="focus-ring mb-4 inline-flex min-h-11 items-center gap-1 rounded-xl text-subhead text-label-secondary hover:text-label">
         <ChevronLeft className="rtl-flip h-4 w-4" /> {t('common.back')}
       </Link>
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold sm:text-3xl">{formation.title}</h1>
+        <h1 className="text-title-1 sm:text-large-title">{formation.title}</h1>
         <LevelBadge level={formation.level} />
       </div>
 
       {!hasAccess && (
-        <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-rosegold-light bg-champagne/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-separator bg-champagne p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-rosegold">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-secondary text-rosegold">
               <Lock className="h-5 w-5" />
             </span>
             <div>
-              <div className="font-semibold text-plum">{t('formation.lockedTitle')}</div>
-              <div className="text-sm text-muted">{t('formation.lockedText')}</div>
+              <div className="font-semibold text-label">{t('formation.lockedTitle')}</div>
+              <div className="text-sm text-label-secondary">{t('formation.lockedText')}</div>
             </div>
           </div>
           <a href={whatsappLink(t('catalog.waFormation', { name: formation.title, email: profile?.email ?? '' }))} target="_blank" rel="noreferrer">
@@ -275,15 +276,15 @@ export function FormationPage() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="min-w-0 space-y-5">
+        <div className="min-w-0 space-y-6">
           {current ? (
             <AnimatePresence mode="wait" initial={true}>
               <motion.div
                 key={current.id}
-                initial={{ opacity: 0, scale: 0.97, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 0.985, filter: 'blur(6px)' }}
-                transition={{ duration: 0.45, ease }}
+                initial={reducedMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: reducedMotion ? 1 : 0 }}
+                transition={{ duration: reducedMotion ? 0 : 0.15, ease }}
               >
                 <VideoPlayer
                   videoId={current.id}
@@ -298,24 +299,24 @@ export function FormationPage() {
             <div className="flex aspect-video items-center justify-center overflow-hidden rounded-2xl bg-blush-gradient">
               <div className="text-center">
                 <Lock className="mx-auto h-10 w-10 text-rosegold" />
-                <p className="mt-3 text-sm text-muted">{flat.length ? t('formation.lockedText') : t('formation.noVideos')}</p>
+                <p className="mt-3 text-sm text-label-secondary">{flat.length ? t('formation.lockedText') : t('formation.noVideos')}</p>
               </div>
             </div>
           )}
 
           {current && (
-            <div className="card overflow-hidden p-5">
+            <div className="card overflow-hidden p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <AnimatePresence mode="wait">
                 <motion.div
                   key={current.id}
                   className="min-w-0"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0, transition: { duration: 0.35, delay: 0.1, ease } }}
-                  exit={{ opacity: 0, y: -6, transition: { duration: 0.15 } }}
+                  initial={reducedMotion ? false : { opacity: 0 }}
+                  animate={{ opacity: 1, transition: { duration: reducedMotion ? 0 : 0.15, ease } }}
+                  exit={{ opacity: reducedMotion ? 1 : 0, transition: { duration: reducedMotion ? 0 : 0.1 } }}
                 >
-                  <h2 className="text-xl font-semibold">{current.title}</h2>
-                  <div className="mt-1 flex items-center gap-2 text-sm text-muted">
+                  <h2 className="text-title-3">{current.title}</h2>
+                  <div className="mt-1 flex items-center gap-2 text-sm text-label-secondary">
                     <Clock className="h-4 w-4" /> <span dir="ltr">{formatDuration(current.duration_seconds)}</span>
                     {current.is_free_preview && <Badge tone="gold">{t('formation.freePreview')}</Badge>}
                   </div>
@@ -332,7 +333,7 @@ export function FormationPage() {
                   </Button>
                 )}
               </div>
-              <div className="mt-5 flex items-center justify-between gap-3 border-t border-blush-100 pt-4">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-separator/60 pt-4">
                 <Button variant="ghost" size="sm" disabled={!prev} onClick={() => prev && select(prev.id)} icon={<ArrowLeft className="rtl-flip h-4 w-4" />}>
                   {t('formation.previous')}
                 </Button>
@@ -344,27 +345,27 @@ export function FormationPage() {
           )}
 
           <div className="card overflow-hidden">
-            <div className="flex border-b border-blush-100">
+            <div className="flex border-b border-separator/60">
               {(['description', 'content'] as const).map((k) => (
                 <button
                   key={k}
                   onClick={() => setTab(k)}
                   className={cn(
-                    'relative px-5 py-3 text-sm font-medium transition-colors',
+                    'focus-ring relative min-h-12 flex-1 px-6 py-3 text-subhead font-semibold transition-colors',
                     k === 'content' && 'lg:hidden',
-                    tab === k ? 'text-plum' : 'text-muted hover:text-plum',
+                    tab === k ? 'text-accent' : 'text-label-secondary hover:text-label',
                   )}
                 >
                   {t(`formation.${k}`)}
                   {tab === k && (
-                    <motion.span layoutId="formation-tab-underline" className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-gradient" transition={spring} />
+                    <motion.span layoutId={reducedMotion ? undefined : "formation-tab-underline"} className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-gradient" transition={reducedMotion ? { duration: 0 } : spring} />
                   )}
                 </button>
               ))}
             </div>
-            <div className={cn('space-y-4 whitespace-pre-line p-5 text-sm leading-relaxed text-ink/90', tab !== 'description' && 'hidden lg:block')}>
+            <div className={cn('space-y-4 whitespace-pre-line p-6 text-sm leading-relaxed text-label', tab !== 'description' && 'hidden lg:block')}>
               {current?.description && <p>{current.description}</p>}
-              {formation.description ? <p>{formation.description}</p> : !current?.description && <p className="text-muted">{t('formation.noDescription')}</p>}
+              {formation.description ? <p>{formation.description}</p> : !current?.description && <p className="text-label-secondary">{t('formation.noDescription')}</p>}
             </div>
             {tab === 'content' && <div className="lg:hidden [&>.card]:rounded-none [&>.card]:border-0 [&>.card]:shadow-none">{renderLessonList('mobile')}</div>}
           </div>

@@ -66,16 +66,16 @@ export function SectionsManager({ formationId, sections }: { formationId: string
   return (
     <div className="space-y-4">
       {sections.length === 0 ? (
-        <p className="rounded-xl bg-blush-50 p-4 text-sm text-muted">{t('sections.empty')}</p>
+        <p className="rounded-xl bg-surface-tertiary p-4 text-sm text-label-secondary">{t('sections.empty')}</p>
       ) : (
         <SortableList
           items={sections}
           onReorder={(n) => void reorder(n)}
           className="space-y-2"
           renderItem={(s, handle, index) => (
-            <div className="flex items-center gap-2 rounded-xl border border-blush-100 bg-white px-2 py-2">
+            <div className="flex items-center gap-2 rounded-xl border border-separator/60 bg-surface-secondary px-2 py-2">
               {handle}
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blush-100 text-xs font-semibold text-blush-700">{index + 1}</span>
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-xs font-semibold text-accent">{index + 1}</span>
               {editingId === s.id ? (
                 <form
                   className="flex flex-1 items-center gap-1"
@@ -84,7 +84,7 @@ export function SectionsManager({ formationId, sections }: { formationId: string
                     void rename(s.id);
                   }}
                 >
-                  <Input autoFocus className="h-9" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                  <Input autoFocus className="min-h-11" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
                   <Button type="submit" size="icon" variant="subtle">
                     <Check className="h-4 w-4" />
                   </Button>
@@ -94,7 +94,7 @@ export function SectionsManager({ formationId, sections }: { formationId: string
                 </form>
               ) : (
                 <>
-                  <span className="flex min-w-0 flex-1 items-center gap-2 text-sm font-medium text-plum">
+                  <span className="flex min-w-0 flex-1 items-center gap-2 text-sm font-medium text-label">
                     <FolderOpen className="h-4 w-4 shrink-0 text-rosegold" />
                     <span className="truncate">{s.title}</span>
                   </span>
@@ -109,7 +109,7 @@ export function SectionsManager({ formationId, sections }: { formationId: string
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="text-red-500 hover:bg-red-50" onClick={() => setDeleting(s)} title={t('common.delete')}>
+                  <Button size="icon" variant="ghost" className="text-danger hover:bg-danger-soft" onClick={() => setDeleting(s)} title={t('common.delete')}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </>
