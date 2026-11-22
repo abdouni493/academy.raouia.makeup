@@ -23,7 +23,7 @@ function applyAppearance() {
   const dark = mode === 'dark' || (mode === 'system' && systemAppearance.matches);
   document.documentElement.classList.toggle('dark', dark);
   document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#000000' : '#FFFFFF');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#1A1218' : '#FFFBFC');
 }
 
 function updateMode(next: ThemeMode) {

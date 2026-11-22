@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, PlayCircle } from 'lucide-react';
+import { BookOpen, PlayCircle, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { LoadingTransition, StaggerGroup, StaggerItem } from '@/components/Motion';
+import { BRAND_NAME } from '@/lib/config';
 import { ease, useReducedMotion } from '@/lib/motion';
 import { Button, buttonClassName, CardGridSkeleton, EmptyState, Skeleton } from '@/components/ui';
 import { CoverImage } from '@/components/CoverImage';
@@ -41,11 +42,16 @@ export function DashboardPage() {
         initial={reducedMotion ? false : { opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reducedMotion ? 0 : 0.2, ease }}
-        className="relative overflow-hidden rounded-3xl border border-separator/60 bg-blush-gradient p-6 sm:p-10"
+        className="relative isolate overflow-hidden rounded-3xl ring-1 ring-separator/50 bg-blush-gradient p-6 shadow-soft sm:p-10"
       >
+        <span aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-champagne/40 blur-3xl" />
+        <span aria-hidden="true" className="pointer-events-none absolute -bottom-24 -left-10 h-56 w-56 rounded-full bg-accent/15 blur-3xl" />
         <div className="relative max-w-2xl">
-          <h1 className="text-large-title">{t('client.hello', { name: firstName })}</h1>
-          <p className="mt-2 text-label-secondary">{t('client.welcome')}</p>
+          <div className="mb-3 inline-flex items-center gap-1.5 text-footnote font-semibold uppercase tracking-[0.14em] text-rosegold">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> {BRAND_NAME}
+          </div>
+          <h1 className="font-brand text-large-title font-semibold">{t('client.hello', { name: firstName })}</h1>
+          <p className="mt-2 text-callout text-label-secondary">{t('client.welcome')}</p>
         </div>
       </motion.section>
 

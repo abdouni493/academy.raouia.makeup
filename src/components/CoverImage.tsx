@@ -10,15 +10,17 @@ export function CoverImage({ src, alt, seed = '', pack = false, className }: { s
   }
   const n = Array.from(seed).reduce((a, c) => a + c.charCodeAt(0), 0);
   const Icon = pack ? Crown : icons[n % icons.length];
+  // Elegant generated placeholders in the beauty palette (no stock photos).
   const fills = [
-    'bg-accent-soft',
-    'bg-info-soft',
-    'bg-warning-soft',
-    'bg-surface-tertiary',
+    'bg-blush-gradient',
+    'bg-champagne-gradient',
+    'bg-gradient-to-br from-blush-100 to-blush-200',
+    'bg-gradient-to-br from-background-tertiary to-nude',
   ];
   return (
     <div className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', fills[n % fills.length], className)}>
-      <Icon className="relative h-12 w-12 text-label-secondary" strokeWidth={1.25} />
+      <span aria-hidden="true" className="absolute -right-6 -top-8 h-24 w-24 rounded-full bg-white/25 blur-2xl" />
+      <Icon className="relative h-12 w-12 text-rosegold/80" strokeWidth={1.25} />
     </div>
   );
 }

@@ -85,15 +85,16 @@ export default {
       },
       borderRadius: { lg: '0.75rem', xl: '1rem', '2xl': '1.25rem', '3xl': '1.75rem', sheet: '1.75rem' },
       boxShadow: {
-        soft: '0 2px 8px rgb(var(--shadow) / 0.04), 0 8px 24px rgb(var(--shadow) / 0.05)',
-        glass: 'inset 0 1px 0 var(--glass-highlight), inset 0 0 0 1px var(--glass-keyline), 0 2px 8px rgb(var(--shadow) / 0.08)',
-        glow: '0 2px 8px rgb(var(--shadow) / 0.08)',
-        elevated: '0 8px 32px rgb(var(--shadow) / 0.12), 0 1px 4px rgb(var(--shadow) / 0.08)',
-        sheet: '0 24px 80px rgb(var(--shadow) / 0.24)',
+        soft: '0 1px 2px rgb(var(--shadow) / 0.04), 0 8px 24px -6px rgb(var(--shadow) / 0.08)',
+        glass: 'inset 0 1px 0 var(--glass-highlight), inset 0 -1px 0 var(--glass-sheen), inset 0 0 0 1px var(--glass-keyline), 0 2px 10px -2px rgb(var(--shadow) / 0.09)',
+        glow: '0 8px 28px -8px rgb(var(--accent-glow) / 0.55)',
+        elevated: '0 1px 3px rgb(var(--shadow) / 0.06), 0 12px 40px -10px rgb(var(--shadow) / 0.18)',
+        sheet: 'inset 0 1px 0 var(--glass-highlight), 0 -2px 8px rgb(var(--shadow) / 0.05), 0 28px 80px -12px rgb(var(--shadow) / 0.30)',
       },
       backgroundImage: {
         'brand-gradient': 'linear-gradient(135deg, rgb(var(--brand-start)), rgb(var(--gradient-end)))',
-        'blush-gradient': 'linear-gradient(145deg, rgb(var(--blush-50)), rgb(var(--blush-100)) 55%, rgb(var(--champagne)))',
+        'blush-gradient': 'linear-gradient(145deg, rgb(var(--blush-50)), rgb(var(--blush-100)) 52%, rgb(var(--champagne)))',
+        'champagne-gradient': 'linear-gradient(135deg, rgb(var(--background-tertiary)), rgb(var(--champagne)))',
       },
       keyframes: {
         watermark: {

@@ -22,7 +22,7 @@ export function FormationCard({ entry, progress, requestMessage }: { entry: Cata
         className="relative aspect-[16/10] overflow-hidden bg-fill-secondary"
       >
         <CoverImage src={entry.cover_url} alt="" seed={entry.id} />
-        <span className="absolute bottom-3 end-3 grid h-9 w-9 place-items-center rounded-full bg-card text-accent shadow-soft">
+        <span className="glass absolute bottom-3 end-3 grid h-10 w-10 place-items-center rounded-full text-accent shadow-glass">
           {locked ? <Lock className="h-4 w-4" /> : <PlayCircle className="h-5 w-5" />}
         </span>
       </motion.div>

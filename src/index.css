@@ -5,7 +5,8 @@
 @layer base {
   :root {
     color-scheme: light;
-    /* RGB channels keep the iOS palette usable with Tailwind opacity modifiers. */
+    /* iOS system swatches drive the semantic STATUS colors (success/danger/warning/info)
+       and the bg-system-* utilities. The brand identity below is a feminine beauty palette. */
     --system-blue: 0 122 255;
     --system-green: 52 199 89;
     --system-indigo: 88 86 214;
@@ -24,40 +25,44 @@
     --system-gray-4: 209 209 214;
     --system-gray-5: 229 229 234;
     --system-gray-6: 242 242 247;
-    --background: 255 255 255;
-    --background-secondary: var(--system-gray-6);
-    --background-tertiary: 255 255 255;
-    --grouped: var(--system-gray-6);
-    --card: var(--background);
-    --label: 0 0 0;
-    --label-rgb: 60 60 67;
-    --label-secondary: rgb(var(--label-rgb) / 60%);
-    --label-tertiary: rgb(var(--label-rgb) / 30%);
-    --label-quaternary: rgb(var(--label-rgb) / 18%);
-    --separator: 60 60 67;
-    --separator-alpha: .29;
-    --opaque-separator: 198 198 200;
-    --fill: 120 120 128;
-    --fill-secondary: 120 120 128;
-    --fill-tertiary: 118 118 128;
-    --fill-quaternary: 116 116 128;
-    --fill-alpha: .20;
-    --fill-secondary-alpha: .16;
-    --fill-tertiary-alpha: .12;
-    --fill-quaternary-alpha: .08;
 
-    /* Set the interaction tint here. Ink and glass derive from the same swatch. */
-    --accent: var(--system-pink);
+    /* Surfaces — Pearl White, warm Ivory and soft Blush instead of clinical white/gray. */
+    --background: 255 251 252;            /* Pearl White  #FFFBFC */
+    --background-secondary: 250 241 244;  /* warm blush veil */
+    --background-tertiary: 255 247 241;   /* Ivory Cream  #FFF7F1 */
+    --grouped: 250 242 245;               /* app canvas — soft ballet blush */
+    --card: var(--background);            /* opaque reading surfaces — pearl */
+
+    /* Ink — Deep Plum primary, Muted Mauve secondary. */
+    --label: 65 42 56;                    /* Deep Plum    #412A38 */
+    --label-rgb: 65 42 56;
+    --label-secondary: rgb(var(--label-rgb) / 62%);
+    --label-tertiary: rgb(var(--label-rgb) / 34%);
+    --label-quaternary: rgb(var(--label-rgb) / 18%);
+    --separator: 120 92 106;              /* warm plum hairline */
+    --separator-alpha: .24;
+    --opaque-separator: 229 216 222;
+    --fill: 150 120 136;                  /* warm mauve fills */
+    --fill-secondary: 150 120 136;
+    --fill-tertiary: 148 118 134;
+    --fill-quaternary: 146 116 132;
+    --fill-alpha: .18;
+    --fill-secondary-alpha: .14;
+    --fill-tertiary-alpha: .10;
+    --fill-quaternary-alpha: .07;
+
+    /* The interaction tint. Rose Pink is the hue; ink and glass derive from it. */
+    --accent: 232 143 169;                /* Rose Pink    #E88FA9 */
     --success: var(--system-green);
     --danger: var(--system-red);
     --warning: var(--system-orange);
     --info: var(--system-blue);
-    --ink-mix: 52%;
-    --ink-base: black;
-    --soft-mix: 10%;
+    --ink-mix: 54%;
+    --ink-base: #2a1420;                  /* plum-black, keeps derived inks warm */
+    --soft-mix: 13%;
     --accent-ink: color-mix(in srgb, rgb(var(--accent)) var(--ink-mix), var(--ink-base));
     --accent-pressed-ink: color-mix(in srgb, var(--accent-ink) 86%, var(--ink-base));
-    --accent-pressed: color-mix(in srgb, rgb(var(--accent)) 66%, black);
+    --accent-pressed: color-mix(in srgb, rgb(var(--accent)) 60%, #2a1420);
     --accent-soft: color-mix(in srgb, rgb(var(--accent)) var(--soft-mix), rgb(var(--card)));
     --accent-contrast: 255 255 255;
     --success-ink: color-mix(in srgb, rgb(var(--success)) var(--ink-mix), var(--ink-base));
@@ -69,39 +74,42 @@
     --warning-soft: color-mix(in srgb, rgb(var(--warning)) var(--soft-mix), rgb(var(--card)));
     --info-soft: color-mix(in srgb, rgb(var(--info)) var(--soft-mix), rgb(var(--card)));
 
-    /* Raw low-emphasis labels are too translucent for small text on glass.
-       Text utilities use these solid, contrast-tested semantic inks. */
-    --secondary-ink: 68 68 76;
-    --tertiary-ink: 76 76 84;
-    --control-border: 112 112 121;
-    --surface-inverse: 16 16 18;
+    /* Solid, contrast-tested low-emphasis inks for small text over glass and blush. */
+    --secondary-ink: 122 100 114;         /* Muted Mauve (AA ~5:1) */
+    --tertiary-ink: 150 126 140;
+    --control-border: 130 108 122;
+    --surface-inverse: 46 28 40;          /* plum veil for media overlays */
     --material: var(--card);
     --sidebar: var(--card);
     --sidebar-label: var(--label);
     --sidebar-secondary: var(--secondary-ink);
-    --sidebar-fill: var(--system-gray-5);
-    --scrim: 0 0 0;
-    --shadow: 27 27 32;
-    --glass-keyline: rgb(0 0 0 / .11);
-    --glass-highlight: rgb(255 255 255 / .76);
-    --glass-sheen: rgb(255 255 255 / .07);
-    --glass-accent-base: color-mix(in srgb, rgb(var(--accent)) 69%, black);
+    --sidebar-fill: 245 233 238;          /* warm blush fill */
+    --scrim: 46 28 40;                    /* plum scrim, softer than pure black */
+    --shadow: 74 44 58;                   /* warm plum shadow for cohesion */
 
-    /* Signature colors are reserved for the academy identity and artwork. */
-    --brand-start: 161 40 78;
-    --gradient-end: 143 72 88;
-    --rosegold: 119 66 56;
+    /* Liquid Glass — luminous keyline, specular highlight, diagonal sheen. */
+    --glass-keyline: rgb(74 44 58 / .10);
+    --glass-highlight: rgb(255 255 255 / .82);
+    --glass-sheen: rgb(255 255 255 / .10);
+    --glass-specular: rgb(255 255 255 / .58);
+    --glass-accent-base: 185 76 114;      /* rich dusty-raspberry CTA (white text ~4.9:1) */
+    --accent-glow: 232 143 169;           /* rose glow for primary actions */
+
+    /* Signature colors — academy identity, artwork and luxury details. */
+    --brand-start: 212 100 138;           /* rose  #D4648A */
+    --gradient-end: 142 68 90;            /* plum  #8E445A */
+    --rosegold: 156 90 84;                /* readable rose-gold for small marks */
     --rosegold-light: 231 201 188;
-    --champagne: 245 229 207;
+    --champagne: 235 205 181;             /* Champagne #EBCDB5 */
     --nude: 234 216 206;
-    --blush-50: 252 242 244;
-    --blush-100: 247 225 233;
-    --blush-200: 238 198 212;
-    --blush-300: 219 162 181;
-    --blush-400: 157 56 91;
-    --blush-500: 151 42 80;
-    --blush-600: 141 36 73;
-    --blush-700: 122 28 59;
+    --blush-50: 253 244 247;
+    --blush-100: 251 231 238;             /* Ballet Pink #FBE7EE */
+    --blush-200: 247 200 216;             /* Soft Blush  #F7C8D8 */
+    --blush-300: 227 138 166;
+    --blush-400: 185 76 114;
+    --blush-500: 158 60 96;
+    --blush-600: 138 52 82;
+    --blush-700: 112 42 66;
   }
   :root.dark {
     color-scheme: dark;
@@ -122,41 +130,54 @@
     --system-gray-4: 58 58 60;
     --system-gray-5: 44 44 46;
     --system-gray-6: 28 28 30;
-    --background: 0 0 0;
-    --background-tertiary: var(--system-gray-5);
+
+    /* Deep plum night, rich charcoal-plum surfaces. */
+    --background: 26 18 24;               /* #1A1218 deep plum */
+    --background-secondary: 44 32 42;     /* #2C202A charcoal-plum */
+    --background-tertiary: 58 44 56;
     --grouped: var(--background);
     --card: var(--background-secondary);
-    --label: 255 255 255;
-    --label-rgb: 235 235 245;
-    --separator: 84 84 88;
-    --separator-alpha: .65;
-    --opaque-separator: 56 56 58;
-    --fill-alpha: .36;
-    --fill-secondary-alpha: .32;
-    --fill-tertiary-alpha: .24;
-    --fill-quaternary-alpha: .18;
-    --ink-mix: 47%;
-    --ink-base: white;
-    --soft-mix: 14%;
-    --secondary-ink: 224 224 232;
-    --tertiary-ink: 210 210 218;
-    --control-border: 148 148 156;
+    --label: 248 240 238;                 /* soft cream */
+    --label-rgb: 245 236 238;
+    --separator: 150 120 136;
+    --separator-alpha: .34;
+    --opaque-separator: 66 50 60;
+    --fill: 196 158 176;                  /* warm mauve fills on plum */
+    --fill-secondary: 196 158 176;
+    --fill-tertiary: 194 156 174;
+    --fill-quaternary: 192 154 172;
+    --fill-alpha: .30;
+    --fill-secondary-alpha: .24;
+    --fill-tertiary-alpha: .18;
+    --fill-quaternary-alpha: .14;
+    --accent: 240 162 186;               /* luminous rose for dark */
+    --ink-mix: 46%;
+    --ink-base: #fff3f6;
+    --soft-mix: 16%;
+    --accent-pressed: color-mix(in srgb, rgb(var(--accent)) 70%, #fff3f6);
+    --secondary-ink: 216 198 208;
+    --tertiary-ink: 188 168 180;
+    --control-border: 172 148 162;
+    --sidebar-fill: 58 44 56;
     --shadow: 0 0 0;
-    --glass-keyline: rgb(255 255 255 / .16);
+    --glass-keyline: rgb(255 255 255 / .14);
     --glass-highlight: rgb(255 255 255 / .16);
-    --glass-sheen: rgb(255 255 255 / .035);
+    --glass-sheen: rgb(255 255 255 / .05);
+    --glass-specular: rgb(255 255 255 / .18);
+    --glass-accent-base: 202 96 134;     /* luminous rose CTA on plum */
+    --accent-glow: 226 120 156;
     --rosegold: 244 196 176;
     --rosegold-light: 101 70 63;
-    --champagne: 60 48 48;
+    --champagne: 74 58 52;
     --nude: 81 61 59;
-    --blush-50: 48 35 45;
-    --blush-100: 75 45 62;
-    --blush-200: 101 64 81;
-    --blush-300: 180 124 148;
-    --blush-400: 231 152 178;
-    --blush-500: 245 162 188;
-    --blush-600: 245 162 188;
-    --blush-700: 255 193 213;
+    --blush-50: 52 36 46;
+    --blush-100: 78 50 66;
+    --blush-200: 104 66 84;
+    --blush-300: 186 128 152;
+    --blush-400: 236 158 182;
+    --blush-500: 244 170 192;
+    --blush-600: 246 180 200;
+    --blush-700: 250 198 214;
   }
   html { -webkit-tap-highlight-color: transparent; scroll-padding-block: 5rem; }
   body { @apply bg-grouped font-sans text-body text-label antialiased; min-height: 100dvh; }
@@ -174,19 +195,20 @@
 }
 
 @layer components {
-  .card, .grouped-list { @apply rounded-2xl bg-card shadow-soft; }
+  .card, .grouped-list { @apply rounded-2xl bg-card shadow-soft ring-1 ring-separator/60; }
   .grouped-list { @apply divide-y divide-separator; }
   .focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface; }
   .text-gradient { @apply bg-brand-gradient bg-clip-text text-transparent; }
 
-  /* Opaque by default. Each material owns one backdrop and one static glint. */
+  /* Opaque by default. Each material owns one backdrop and a static specular glint. */
   :is(.glass, .glass-accent, .glass-ultrathin, .glass-thin, .glass-regular,
       .material, .material-bar, .material-sheet, .material-sidebar, .sidebar-material) {
     --glass-base: rgb(var(--material));
     --glass-opacity: 91%;
     --glass-blur: 16px;
     background-color: var(--glass-base);
-    background-image: linear-gradient(155deg, var(--glass-sheen), transparent 42%);
+    background-image: linear-gradient(158deg, var(--glass-specular) 0%, transparent 34%),
+                      linear-gradient(200deg, var(--glass-sheen), transparent 48%);
     @apply shadow-glass;
   }
   .glass {
@@ -194,13 +216,20 @@
     --glass-blur: 8px;
   }
   .glass-accent {
-    --glass-base: var(--glass-accent-base);
-    --glass-opacity: 95%;
+    --glass-base: rgb(var(--glass-accent-base));
+    --glass-opacity: 96%;
     --glass-blur: 8px;
     color: rgb(var(--accent-contrast));
+    /* Glossy rose CTA: top specular, inner keyline and a soft rose glow. */
+    background-image: linear-gradient(176deg, rgb(255 255 255 / .22) 0%, transparent 46%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / .38),
+      inset 0 0 0 1px rgb(255 255 255 / .12),
+      0 6px 20px -6px rgb(var(--accent-glow) / .60),
+      0 2px 6px -2px rgb(var(--shadow) / .14);
   }
-  .glass-ultrathin { --glass-opacity: 83%; --glass-blur: 12px; }
-  .glass-thin, .material-bar { --glass-opacity: 87%; --glass-blur: 14px; }
+  .glass-ultrathin { --glass-opacity: 82%; --glass-blur: 13px; }
+  .glass-thin, .material-bar { --glass-opacity: 86%; --glass-blur: 14px; }
   .glass-regular, .material-sheet, .material-sidebar, .sidebar-material { --glass-opacity: 95%; }
   .material-sidebar, .sidebar-material { color: rgb(var(--sidebar-label)); }
 
@@ -209,8 +238,8 @@
         .material, .material-bar, .material-sheet, .material-sidebar, .sidebar-material) {
       background-color: color-mix(in srgb, var(--glass-base) var(--glass-opacity), transparent);
       /* autoprefixer: ignore next */
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
-      backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+      backdrop-filter: blur(var(--glass-blur)) saturate(150%);
     }
     /* Inside a material or an opaque content card the parent provides the backdrop. */
     :is(.card, .grouped-list, .glass, .glass-ultrathin, .glass-thin, .glass-regular,
@@ -224,12 +253,12 @@
 
   .scrollbar-thin { scrollbar-width: thin; scrollbar-color: rgb(var(--control-border)) transparent; }
   :where(button, a[href], [role='button']), .press-feedback {
-    transition: background-color 140ms, color 140ms, scale 140ms cubic-bezier(.2,.8,.2,1);
+    transition: background-color 140ms, color 140ms, box-shadow 200ms, scale 180ms cubic-bezier(.2,.8,.2,1);
   }
   :where(button, a[href], [role='button']):active:not(:disabled), .press-feedback:active:not(:disabled) {
     scale: .96;
   }
-  .glass-accent:active:not(:disabled) { filter: brightness(1.05); }
+  .glass-accent:active:not(:disabled) { filter: brightness(1.06) saturate(1.04); }
   [data-sonner-toast] { --normal-bg: rgb(var(--card)); --normal-text: rgb(var(--label)); --normal-border: rgb(var(--opaque-separator)); font-family: inherit; }
 }
 
